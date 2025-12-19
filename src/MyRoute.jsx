@@ -11,6 +11,7 @@ import Login from './component/Login'
 import Register from './pages/Register'
 //import Show from './context/Show'
 import CartItems from './redux/CartItems'
+import UserProfile from './pages/UserProfile'
 const MyRoute = () => {
   return (
     <>
@@ -24,6 +25,7 @@ const MyRoute = () => {
               <Route path='checkout' element={<Checkout/>}/>
               <Route path='login' element={<Login/>}/>
               <Route path='register' element={<Register/>}/>
+              <Route path='user' element={<UserProfile/>}/>
               
               <Route path='redux' element={<CartItems/>}/>
             </Route>

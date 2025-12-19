@@ -22,7 +22,7 @@ const Product = () => {
            ))}
         </div>
         <div className="filter my-2 mb-2 fs-4 text-end">
-          <i class="bi bi-filter"></i>
+          <i className="bi bi-filter"></i>
         </div>
         </div>
     </>

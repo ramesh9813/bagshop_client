@@ -19,27 +19,26 @@ const ProductDetial = () => {
       .catch(error=>console.log(error))
   },[id])
 
-  const addToCart=()=>{
-    const cartItem=JSON.parse(localStorage.getItem('cartData'))||[]
-    const productItem={
-      id:product._id,
-      title:product.name,
-      price:product.price,
-      description:product.description,
-      image:product.imageUrl,
-      quantity:1,
-      loginStatus:false,
-      totalCost:0
+  const addToCart = async () => {
+    try {
+        const config = {
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            withCredentials: true
+        }
 
-    }
-    const existingItem=cartItem.find(item=> item.id===product._id)
-    if(existingItem){
-      toast.error("prodyuct is already exist in th cart")
-    }
-    else{
-      cartItem.push(productItem)
-      localStorage.setItem('cartData', JSON.stringify(cartItem))
-      toast.success(`${product.name} is sucessfully added in the cart`)
+        const { data } = await axios.post(
+            `${import.meta.env.VITE_API_BASE_URL}/cart/add`,
+            { productId: product._id, quantity: 1 },
+            config
+        )
+
+        if (data.success) {
+            toast.success("Item added to cart")
+        }
+    } catch (error) {
+        toast.error(error.response?.data?.message || "Failed to add to cart. Please login first.")
     }
   }
   return (

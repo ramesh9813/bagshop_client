@@ -1,29 +1,84 @@
-import React from 'react'
+import React, { useState } from 'react'
+import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 const Login = () => {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const navigate = useNavigate()
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    try {
+      const config = {
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        withCredentials: true // Important for cookies
+      }
+      
+      const { data } = await axios.post(
+        `${import.meta.env.VITE_API_BASE_URL}/login`,
+        { email, password },
+        config
+      )
+
+      if (data.success) {
+        toast.success("Login Successful!")
+        // You might want to store user info in a global state/context here
+        localStorage.setItem('user', JSON.stringify(data.user)) // Optional: for easy access to user info
+        setTimeout(() => {
+            navigate('/')
+        }, 1500)
+      }
+
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Login Failed")
+    }
+  }
+
   return (
     <>
+    <ToastContainer theme='colored' position='top-center'/>
     <div className="container login">
-        <form>
-        <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+        <form onSubmit={handleSubmit}>
+        <h1 className="h3 mb-3 fw-normal">Please sign in</h1>
 
-        <div class="form-floating mb-3">
-        <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com" />
-        <label for="floatingInput">Email address</label>
+        <div className="form-floating mb-3">
+        <input 
+            type="email" 
+            className="form-control" 
+            id="floatingInput" 
+            placeholder="name@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+        />
+        <label htmlFor="floatingInput">Email address</label>
         </div>
-        <div class="form-floating">
-        <input type="password" class="form-control" id="floatingPassword" placeholder="Password" />
-        <label for="floatingPassword">Password</label>
+        <div className="form-floating">
+        <input 
+            type="password" 
+            className="form-control" 
+            id="floatingPassword" 
+            placeholder="Password" 
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+        />
+        <label htmlFor="floatingPassword">Password</label>
         </div>
 
-        <div class="form-check text-start my-3">
-        <input class="form-check-input" type="checkbox" value="remember-me" id="flexCheckDefault" />
-        <label class="form-check-label" for="flexCheckDefault">
+        <div className="form-check text-start my-3">
+        <input className="form-check-input" type="checkbox" value="remember-me" id="flexCheckDefault" />
+        <label className="form-check-label" htmlFor="flexCheckDefault">
             Remember me
         </label>
         </div>
-        <button class="btn btn-warning w-100 py-2" type="submit">Sign in</button>
-        <p class="mt-5 mb-3 text-body-secondary">&copy; 2017–2024</p>
+        <button className="btn btn-warning w-100 py-2" type="submit">Sign in</button>
+        <p className="mt-5 mb-3 text-body-secondary">&copy; 2017–2024</p>
     </form>
     </div>
     </>

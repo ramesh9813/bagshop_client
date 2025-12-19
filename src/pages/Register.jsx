@@ -1,8 +1,16 @@
 import React from 'react'
 import { Formik, Form, Field,ErrorMessage } from 'formik'
 import * as Yup from 'yup'
+import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 const Register = () => {
+    const navigate = useNavigate();
   return (
+    <>
+    <ToastContainer theme='colored' position='top-center'/>
     <Formik 
     initialValues={{
         fname:'',
@@ -28,12 +36,42 @@ const Register = () => {
 
         password:Yup.string()
         .required('Password is required')
-        .matches(/^ (?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@#?&!]).{8,40}$/,'password must have lowercase, uppercase,number, charcter and at least 8 charcter'),
+        // Regex logic: At least one lowercase, one uppercase, one digit, one special char, 8-40 chars.
+        // Removed the leading space from original regex
+        .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@#?&!]).{8,40}$/,'password must have lowercase, uppercase,number, charcter and at least 8 charcter'),
         
         cpassword:Yup.string()
         .required('Password conformation is mandatory')
         .oneOf([Yup.ref('password')],'pasword must match with the one')
     })}
+    onSubmit={async (values) => {
+        try {
+            const config = {
+                headers: { "Content-Type": "application/json" },
+            };
+            
+            const userData = {
+                name: `${values.fname} ${values.lname}`,
+                email: values.email,
+                password: values.password
+            };
+
+            const { data } = await axios.post(
+                `${import.meta.env.VITE_API_BASE_URL}/register`,
+                userData,
+                config
+            );
+
+            if (data.success) {
+                toast.success("Registration Successful! Please login.");
+                setTimeout(() => {
+                    navigate('/login');
+                }, 1500);
+            }
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Registration Failed");
+        }
+    }}
     >
         <div className="container">
             <div className="row d-flex justify-content-center mt-3">
@@ -73,13 +111,13 @@ const Register = () => {
                         
                         <div className="mb-3">
                             <label htmlFor="cpassword">Conform Password</label>
-                            <Field type="cpassword" name="cpassword" id="cpassword" className="form-control"></Field>
+                            <Field type="password" name="cpassword" id="cpassword" className="form-control"></Field>
                             <ErrorMessage name="cpassword">
                                     {msg=><div style={{color:'red'}}>{msg}</div>}
                             </ErrorMessage>
                         </div>
                         <div className="mb-3">
-                            <button className='btn btn-warning'>Register </button>
+                            <button className='btn btn-warning' type="submit">Register </button>
                         </div>
                         </div>
                     </Form>
@@ -88,6 +126,7 @@ const Register = () => {
         </div>
     
     </Formik>
+    </>
   )
 }
 
