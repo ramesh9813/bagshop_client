@@ -3,6 +3,7 @@ import { FaTrash } from 'react-icons/fa';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Link } from 'react-router-dom';
 
 const Cart = () => {
     const[cartItems, setCartItems]=useState([])
@@ -126,7 +127,7 @@ const Cart = () => {
                                     </p>
                                     <hr />
                                     <div className="mt-3">
-                                        <button className='btn btn-warning' >Check Out</button>
+                                        <Link to="/checkout" className='btn btn-warning' >Check Out</Link>
                                     </div>
 
 

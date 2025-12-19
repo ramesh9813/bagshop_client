@@ -3,11 +3,13 @@ import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import { useDispatch } from 'react-redux'
 
 const Login = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const navigate = useNavigate()
+  const dispatch = useDispatch()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -27,8 +29,8 @@ const Login = () => {
 
       if (data.success) {
         toast.success("Login Successful!")
-        // You might want to store user info in a global state/context here
-        localStorage.setItem('user', JSON.stringify(data.user)) // Optional: for easy access to user info
+        localStorage.setItem('user', JSON.stringify(data.user))
+        dispatch({ type: 'LOGIN_SUCCESS', payload: data.user })
         setTimeout(() => {
             navigate('/')
         }, 1500)

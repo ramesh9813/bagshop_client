@@ -12,6 +12,7 @@ import Register from './pages/Register'
 //import Show from './context/Show'
 import CartItems from './redux/CartItems'
 import UserProfile from './pages/UserProfile'
+import PaymentSuccess from './component/PaymentSuccess'
 const MyRoute = () => {
   return (
     <>
@@ -26,6 +27,7 @@ const MyRoute = () => {
               <Route path='login' element={<Login/>}/>
               <Route path='register' element={<Register/>}/>
               <Route path='user' element={<UserProfile/>}/>
+              <Route path='payment/success' element={<PaymentSuccess/>}/>
               
               <Route path='redux' element={<CartItems/>}/>
             </Route>

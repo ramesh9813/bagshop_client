@@ -36,9 +36,7 @@ const Register = () => {
 
         password:Yup.string()
         .required('Password is required')
-        // Regex logic: At least one lowercase, one uppercase, one digit, one special char, 8-40 chars.
-        // Removed the leading space from original regex
-        .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@#?&!]).{8,40}$/,'password must have lowercase, uppercase,number, charcter and at least 8 charcter'),
+        .min(8, 'Password must be at least 8 characters'),
         
         cpassword:Yup.string()
         .required('Password conformation is mandatory')

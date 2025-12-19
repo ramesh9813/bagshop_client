@@ -1,69 +1,142 @@
-import React from 'react'
+import React, { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Checkout = () => {
-  return (
-    <>
-        <div className="container">
-            <h2 className='text-center'>Payment detail</h2>
-            <hr />
-        <div class="my-3">
-            <div class="form-check">
-              <input id="credit" name="paymentMethod" type="radio" class="form-check-input" checked required />
-              <label class="form-check-label" for="credit">Credit card</label>
-            </div>
-            <div class="form-check">
-              <input id="debit" name="paymentMethod" type="radio" class="form-check-input" required />
-              <label class="form-check-label" for="debit">Debit card</label>
-            </div>
-            <div class="form-check">
-              <input id="paypal" name="paymentMethod" type="radio" class="form-check-input" required />
-              <label class="form-check-label" for="paypal">PayPal</label>
-            </div>
-          </div>
+    const navigate = useNavigate();
+    const [address, setAddress] = useState('');
+    const [city, setCity] = useState('');
+    const [phoneNo, setPhoneNo] = useState('');
+    const [shippingPrice, setShippingPrice] = useState(100); // Default shipping cost
 
-        {/* name of the tag */}
-          <div class="row gy-3">
-            <div class="col-md-6">
-              <label for="cc-name" class="form-label">Name on card</label>
-              <input type="text" class="form-control" id="cc-name" placeholder="" required />
-              <small class="text-body-secondary">Full name as displayed on card</small>
-              <div class="invalid-feedback">
-                Name on card is required
-              </div>
+    const submitEsewaForm = (actionUrl, formData) => {
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = actionUrl;
+
+        Object.keys(formData).forEach((key) => {
+            const input = document.createElement("input");
+            input.type = "hidden";
+            input.name = key;
+            input.value = formData[key];
+            form.appendChild(input);
+        });
+
+        document.body.appendChild(form);
+        form.submit();
+    };
+
+    const submitHandler = async (e) => {
+        e.preventDefault();
+        try {
+            const config = {
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                withCredentials: true
+            };
+
+            const orderData = {
+                shippingInfo: {
+                    address,
+                    city,
+                    phoneNo
+                },
+                shippingPrice,
+                paymentInfo: {
+                    status: "Pending" 
+                }
+            };
+
+            // 1. Create Order
+            const { data: orderResponse } = await axios.post(
+                `${import.meta.env.VITE_API_BASE_URL}/order/new`,
+                orderData,
+                config
+            );
+
+            if (orderResponse.success) {
+                // 2. Initiate Payment
+                const { data: paymentResponse } = await axios.post(
+                    `${import.meta.env.VITE_API_BASE_URL}/payment/initiate`,
+                    { orderId: orderResponse.order._id },
+                    config
+                );
+
+                if (paymentResponse.success) {
+                    // 3. Redirect to eSewa
+                    submitEsewaForm(paymentResponse.payment_url, paymentResponse.formData);
+                }
+            }
+
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to place order");
+        }
+    };
+
+    return (
+        <>
+            <ToastContainer theme='colored' position='top-center' />
+            <div className="container mt-5">
+                <div className="row justify-content-center">
+                    <div className="col-md-6">
+                        <div className="card shadow p-4">
+                            <h2 className="text-center mb-4">Shipping Details</h2>
+                            <form onSubmit={submitHandler}>
+                                <div className="mb-3">
+                                    <label htmlFor="address" className="form-label">Address</label>
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        id="address"
+                                        value={address}
+                                        onChange={(e) => setAddress(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label htmlFor="city" className="form-label">City</label>
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        id="city"
+                                        value={city}
+                                        onChange={(e) => setCity(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label htmlFor="phoneNo" className="form-label">Phone Number</label>
+                                    <input
+                                        type="number"
+                                        className="form-control"
+                                        id="phoneNo"
+                                        value={phoneNo}
+                                        onChange={(e) => setPhoneNo(e.target.value)}
+                                        required
+                                    />
+                                </div>
+
+                                <div className="mb-3">
+                                    <label className="form-label">Shipping Charges</label>
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        value={`$${shippingPrice}`}
+                                        disabled
+                                    />
+                                </div>
+
+                                <button type="submit" className="btn btn-warning w-100 btn-lg">Place Order</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
+        </>
+    );
+};
 
-            <div class="col-md-6">
-              <label for="cc-number" class="form-label">Credit card number</label>
-              <input type="text" class="form-control" id="cc-number" placeholder="" required />
-              <div class="invalid-feedback">
-                Credit card number is required
-              </div>
-            </div>
-
-            <div class="col-md-3">
-              <label for="cc-expiration" class="form-label">Expiration</label>
-              <input type="text" class="form-control" id="cc-expiration" placeholder="" required />
-              <div class="invalid-feedback">
-                Expiration date required
-              </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-              <label for="cc-cvv" class="form-label">CVV</label>
-              <input type="text" class="form-control" id="cc-cvv" placeholder="" required />
-              <div class="invalid-feedback">
-                Security code required
-              </div>
-            </div>
-
-            <hr class="my-4"/>
-            <button class="w-100 btn btn-warning btn-lg" type="submit">Continue to checkout</button>
-          </div>
-
-         
-    </>
-  )
-}
-
-export default Checkout
+export default Checkout;

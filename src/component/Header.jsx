@@ -1,25 +1,20 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { toast } from 'react-toastify'
+import { useSelector, useDispatch } from 'react-redux'
 
 const Header = () => {
-  const [user, setUser] = useState(null)
+  const { user } = useSelector(state => state.auth)
+  const dispatch = useDispatch()
   const [showDropdown, setShowDropdown] = useState(false)
   const navigate = useNavigate()
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem('user')
-    if (storedUser) {
-      setUser(JSON.parse(storedUser))
-    }
-  }, [])
 
   const handleLogout = async () => {
     try {
       await axios.get(`${import.meta.env.VITE_API_BASE_URL}/logout`, { withCredentials: true })
       localStorage.removeItem('user')
-      setUser(null)
+      dispatch({ type: 'LOGOUT' })
       toast.success("Logged out successfully")
       navigate('/')
     } catch (error) {
