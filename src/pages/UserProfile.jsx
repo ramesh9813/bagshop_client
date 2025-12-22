@@ -11,6 +11,9 @@ const UserProfile = () => {
     // Profile State
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
+    const [address, setAddress] = useState('');
+    const [city, setCity] = useState('');
+    const [phoneNo, setPhoneNo] = useState('');
 
     // Password State
     const [oldPassword, setOldPassword] = useState('');
@@ -26,6 +29,11 @@ const UserProfile = () => {
                     setUser(data.user);
                     setName(data.user.name);
                     setEmail(data.user.email);
+                    if (data.user.shippingInfo) {
+                        setAddress(data.user.shippingInfo.address || '');
+                        setCity(data.user.shippingInfo.city || '');
+                        setPhoneNo(data.user.shippingInfo.phoneNo || '');
+                    }
                     localStorage.setItem('user', JSON.stringify(data.user)); // Keep local storage in sync
                 }
             } catch (error) {
@@ -40,9 +48,19 @@ const UserProfile = () => {
         e.preventDefault();
         try {
             const config = { headers: { "Content-Type": "application/json" }, withCredentials: true };
+            const userData = {
+                name,
+                email,
+                shippingInfo: {
+                    address,
+                    city,
+                    phoneNo
+                }
+            };
+
             const { data } = await axios.put(
                 `${import.meta.env.VITE_API_BASE_URL}/me/update`,
-                { name, email },
+                userData,
                 config
             );
             
@@ -133,7 +151,38 @@ const UserProfile = () => {
                                     onChange={(e) => setEmail(e.target.value)} 
                                 />
                             </div>
-                            <button type="submit" className="btn btn-warning">Update Profile</button>
+                            
+                            <h5 className="mt-4">Default Delivery Details</h5>
+                            <hr />
+                            <div className="mb-3">
+                                <label className="form-label">Address</label>
+                                <input 
+                                    type="text" 
+                                    className="form-control" 
+                                    value={address} 
+                                    onChange={(e) => setAddress(e.target.value)} 
+                                />
+                            </div>
+                            <div className="mb-3">
+                                <label className="form-label">City</label>
+                                <input 
+                                    type="text" 
+                                    className="form-control" 
+                                    value={city} 
+                                    onChange={(e) => setCity(e.target.value)} 
+                                />
+                            </div>
+                            <div className="mb-3">
+                                <label className="form-label">Phone Number</label>
+                                <input 
+                                    type="text" 
+                                    className="form-control" 
+                                    value={phoneNo} 
+                                    onChange={(e) => setPhoneNo(e.target.value)} 
+                                />
+                            </div>
+
+                            <button type="submit" className="btn btn-warning mt-2">Update Profile</button>
                         </form>
                     </div>
 

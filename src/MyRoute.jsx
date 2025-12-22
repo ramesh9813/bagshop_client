@@ -1,5 +1,5 @@
 import React from 'react'
-import { BrowserRouter as Router,Routes,Route } from 'react-router-dom'
+import { BrowserRouter as Router,Routes,Route, Navigate } from 'react-router-dom'
 import Layout from './component/Layout'
 import Homepage from './pages/Homepage'
 import Product from './pages/Product'
@@ -13,6 +13,22 @@ import Register from './pages/Register'
 import CartItems from './redux/CartItems'
 import UserProfile from './pages/UserProfile'
 import PaymentSuccess from './component/PaymentSuccess'
+
+// Admin Imports
+import AdminRoute from './admin/AdminRoute'
+import AdminLayout from './admin/components/AdminLayout'
+import Dashboard from './admin/pages/Dashboard'
+import ProductList from './admin/pages/ProductList'
+import AddProduct from './admin/pages/AddProduct'
+import EditProduct from './admin/pages/EditProduct'
+import OrderList from './admin/pages/OrderList'
+import Users from './admin/pages/Users'
+import MyOrders from './pages/MyOrders'
+import OrderDetails from './pages/OrderDetails'
+import About from './pages/About'
+import Features from './pages/Features'
+import FAQs from './pages/FAQs'
+
 const MyRoute = () => {
   return (
     <>
@@ -27,9 +43,27 @@ const MyRoute = () => {
               <Route path='login' element={<Login/>}/>
               <Route path='register' element={<Register/>}/>
               <Route path='user' element={<UserProfile/>}/>
+              <Route path='orders/me' element={<MyOrders/>}/>
+              <Route path='order/:id' element={<OrderDetails/>}/>
               <Route path='payment/success' element={<PaymentSuccess/>}/>
+              <Route path='about' element={<About/>}/>
+              <Route path='features' element={<Features/>}/>
+              <Route path='faqs' element={<FAQs/>}/>
               
               <Route path='redux' element={<CartItems/>}/>
+            </Route>
+
+            {/* Admin Routes */}
+            <Route path='/admin' element={<AdminRoute/>}>
+              <Route element={<AdminLayout/>}>
+                <Route index element={<Navigate to="dashboard" replace />} />
+                <Route path='dashboard' element={<Dashboard/>}/>
+                <Route path='products' element={<ProductList/>}/>
+                <Route path='product/add' element={<AddProduct/>}/>
+                <Route path='product/edit/:id' element={<EditProduct/>}/>
+                <Route path='orders' element={<OrderList/>}/>
+                <Route path='users' element={<Users/>}/>
+              </Route>
             </Route>
         </Routes>
     </Router>
