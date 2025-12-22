@@ -3,6 +3,7 @@ import Card from '../component/Card'
 import axios from 'axios'
 import Spinner from '../component/Spinner'
 import { useLocation } from 'react-router-dom'
+import Pagination from '../component/Pagination'
 
 const Product = () => {
     const [products, setProducts] = useState([])
@@ -16,6 +17,10 @@ const Product = () => {
     const [priceRange, setPriceRange] = useState(10000);
     const [minRating, setMinRating] = useState(0);
     const [selectedSize, setSelectedSize] = useState('');
+
+    // Pagination State
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 12;
 
     useEffect(() => {
         setLoading(true);
@@ -45,6 +50,7 @@ const Product = () => {
         } else {
             setSelectedCategories([...selectedCategories, category]);
         }
+        setCurrentPage(1); // Reset to page 1 on filter change
     };
 
     const getFilteredProducts = () => {
@@ -82,6 +88,17 @@ const Product = () => {
 
     const filteredProducts = getFilteredProducts();
 
+    // Pagination Logic
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentProducts = filteredProducts.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber);
+        window.scrollTo(0, 0); // Scroll to top when page changes
+    };
+
     // Get unique sizes from all products for the dropdown
     const availableSizes = [...new Set(products.map(p => p.size))].sort();
 
@@ -99,17 +116,28 @@ const Product = () => {
                                 <Spinner />
                             </div>
                         ) : (
-                            <div className={`row row-cols-1 ${showFilter ? 'row-cols-md-3' : 'row-cols-md-4'} g-4`}>
-                                {filteredProducts.length > 0 ? (
-                                    filteredProducts.map((item, i) => (
-                                        <Card data={item} key={i} />
-                                    ))
-                                ) : (
-                                    <div className="alert alert-info w-100 text-center" role="alert">
-                                        No products found matching your filters.
-                                    </div>
+                            <>
+                                <div className={`row row-cols-1 ${showFilter ? 'row-cols-md-3' : 'row-cols-md-4'} g-4`}>
+                                    {currentProducts.length > 0 ? (
+                                        currentProducts.map((item, i) => (
+                                            <Card data={item} key={i} />
+                                        ))
+                                    ) : (
+                                        <div className="alert alert-info w-100 text-center" role="alert">
+                                            No products found matching your filters.
+                                        </div>
+                                    )}
+                                </div>
+                                
+                                {/* Pagination Control */}
+                                {filteredProducts.length > itemsPerPage && (
+                                    <Pagination 
+                                        currentPage={currentPage}
+                                        totalPages={totalPages}
+                                        onPageChange={handlePageChange}
+                                    />
                                 )}
-                            </div>
+                            </>
                         )}
                     </div>
 
@@ -155,7 +183,10 @@ const Product = () => {
                                     <select 
                                         className="form-select" 
                                         value={sortBy} 
-                                        onChange={(e) => setSortBy(e.target.value)}
+                                        onChange={(e) => {
+                                            setSortBy(e.target.value);
+                                            setCurrentPage(1);
+                                        }}
                                     >
                                         <option value="newest">New Arrivals</option>
                                         <option value="price-low-high">Price: Low to High</option>
@@ -189,7 +220,10 @@ const Product = () => {
                                     <select 
                                         className="form-select" 
                                         value={selectedSize} 
-                                        onChange={(e) => setSelectedSize(e.target.value)}
+                                        onChange={(e) => {
+                                            setSelectedSize(e.target.value);
+                                            setCurrentPage(1);
+                                        }}
                                     >
                                         <option value="">All Sizes</option>
                                         {availableSizes.map(size => (
@@ -208,7 +242,10 @@ const Product = () => {
                                         max="10000" 
                                         step="100" 
                                         value={priceRange} 
-                                        onChange={(e) => setPriceRange(Number(e.target.value))}
+                                        onChange={(e) => {
+                                            setPriceRange(Number(e.target.value));
+                                            setCurrentPage(1);
+                                        }}
                                     />
                                 </div>
 
@@ -223,7 +260,10 @@ const Product = () => {
                                                 name="rating" 
                                                 id={`rating-${star}`}
                                                 checked={minRating === star}
-                                                onChange={() => setMinRating(star)}
+                                                onChange={() => {
+                                                    setMinRating(star);
+                                                    setCurrentPage(1);
+                                                }}
                                             />
                                             <label className="form-check-label" htmlFor={`rating-${star}`}>
                                                 {star} <i className="bi bi-star-fill text-warning"></i> & Up
@@ -237,7 +277,10 @@ const Product = () => {
                                                 name="rating" 
                                                 id="rating-0"
                                                 checked={minRating === 0}
-                                                onChange={() => setMinRating(0)}
+                                                onChange={() => {
+                                                    setMinRating(0);
+                                                    setCurrentPage(1);
+                                                }}
                                             />
                                             <label className="form-check-label" htmlFor="rating-0">
                                                 Any Rating
@@ -254,6 +297,7 @@ const Product = () => {
                                         setPriceRange(10000);
                                         setMinRating(0);
                                         setSelectedSize('');
+                                        setCurrentPage(1);
                                     }}
                                 >
                                     Clear Filters
