@@ -97,7 +97,7 @@ const strippedTitle = (title, carlength) => {
             <div className="card">
             <img src={props.data.imageUrl} className="card-img-top" alt={props.data.name}/>
             <div className="card-body">
-                <h5 className="card-title">{strippedTitle(props.data.name,28)}</h5>
+                <h5 className="card-title">{strippedTitle(props.data.name,25)}</h5>
                 <div className="d-flex justify-content-between align-items-center mb-2">
                   <h5 className='text-success mb-0'>NRS {props.data.price}</h5>
                   <small className={props.data.stock > 0 ? "text-success" : "text-danger"}>

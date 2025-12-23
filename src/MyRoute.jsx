@@ -28,6 +28,7 @@ import OrderDetails from './pages/OrderDetails'
 import About from './pages/About'
 import Features from './pages/Features'
 import FAQs from './pages/FAQs'
+import ContactUs from './pages/ContactUs'
 
 const MyRoute = () => {
   return (
@@ -49,6 +50,7 @@ const MyRoute = () => {
               <Route path='about' element={<About/>}/>
               <Route path='features' element={<Features/>}/>
               <Route path='faqs' element={<FAQs/>}/>
+              <Route path='contact' element={<ContactUs/>}/>
               
               <Route path='redux' element={<CartItems/>}/>
             </Route>

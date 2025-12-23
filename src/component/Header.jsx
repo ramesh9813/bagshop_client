@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { toast } from 'react-toastify'
@@ -14,6 +14,7 @@ const Header = () => {
   const [showHeader, setShowHeader] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [keyword, setKeyword] = useState("");
+  const searchInputRef = useRef(null);
 
   const searchHandler = (e) => {
     e.preventDefault();
@@ -23,6 +24,33 @@ const Header = () => {
       navigate('/products');
     }
   };
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Ignore shortcuts if user is typing in an input or textarea
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) {
+        return;
+      }
+
+      if (e.key === '/') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      } else if (e.key.toLowerCase() === 'c') {
+        navigate('/cart');
+      } else if (e.key.toLowerCase() === 's') {
+        navigate('/orders/me');
+      } else if (e.key.toLowerCase() === 'h') {
+        navigate('/');
+      } else if (e.key.toLowerCase() === 'p') {
+        navigate('/products');
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [navigate]);
 
   const controlNavbar = () => {
     if (typeof window !== 'undefined') {
@@ -76,12 +104,13 @@ const Header = () => {
     <div className="container" style={{"height":"5rem"}}>
       <div className="d-flex align-items-center justify-content-between h-100">
         <Link to="/" className="d-flex align-items-center mb-0 text-dark text-decoration-none">
-        <h4 className="mb-0"><i className="bi bi-backpack4 me-2"></i>BagShop</h4>
+        <h4 className="mb-0"><i className="bi bi-backpack4 me-2"></i></h4>
         </Link>
     
         <div className="d-flex align-items-center">
           <form className="mb-0 me-3 d-none d-md-block" role="search" onSubmit={searchHandler}>
             <input 
+              ref={searchInputRef}
               type="search" 
               className="form-control bg-light" 
               placeholder="Search..." 
@@ -89,6 +118,7 @@ const Header = () => {
               name='search-item'
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
+              style={{ width: '350px' }}
             />
           </form>
 
