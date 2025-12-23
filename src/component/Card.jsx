@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -7,10 +7,16 @@ import { useDispatch } from 'react-redux';
 
 const Card = (props) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   // console.log(props.data)
   if (!props.data) {
     return null; // or handle the absence of data as per your requirement
 }
+
+const handlePriceClick = (e) => {
+  e.preventDefault();
+  navigate(`/products?maxPrice=${props.data.price}`);
+};
 
 const addToCart = async (e) => {
   e.preventDefault(); // Prevent default link behavior if inside a Link
@@ -99,7 +105,14 @@ const strippedTitle = (title, carlength) => {
             <div className="card-body">
                 <h5 className="card-title">{strippedTitle(props.data.name,25)}</h5>
                 <div className="d-flex justify-content-between align-items-center mb-2">
-                  <h5 className='text-success mb-0'>NRS {props.data.price}</h5>
+                  <h5 
+                    className='text-success mb-0' 
+                    onClick={handlePriceClick}
+                    style={{ cursor: 'pointer' }}
+                    title="Click to filter by this price"
+                  >
+                    NRS {props.data.price}
+                  </h5>
                   <small className={props.data.stock > 0 ? "text-success" : "text-danger"}>
                     {props.data.stock > 0 ? `In Stock` : "Out of Stock"}
                   </small>

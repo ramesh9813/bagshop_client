@@ -23,6 +23,8 @@ import AddProduct from './admin/pages/AddProduct'
 import EditProduct from './admin/pages/EditProduct'
 import OrderList from './admin/pages/OrderList'
 import Users from './admin/pages/Users'
+import InquiryList from './admin/pages/InquiryList'
+import InquiryDetails from './admin/pages/InquiryDetails'
 import MyOrders from './pages/MyOrders'
 import OrderDetails from './pages/OrderDetails'
 import About from './pages/About'
@@ -65,6 +67,8 @@ const MyRoute = () => {
                 <Route path='product/edit/:id' element={<EditProduct/>}/>
                 <Route path='orders' element={<OrderList/>}/>
                 <Route path='users' element={<Users/>}/>
+                <Route path='inquiries' element={<InquiryList/>}/>
+                <Route path='inquiry/:id' element={<InquiryDetails/>}/>
               </Route>
             </Route>
         </Routes>

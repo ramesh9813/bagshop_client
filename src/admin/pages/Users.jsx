@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { toast } from 'react-toastify'
+import { useSelector } from 'react-redux'
 
 const Users = () => {
     const [users, setUsers] = useState([])
     const [loading, setLoading] = useState(true)
+    const { user: currentUser } = useSelector(state => state.auth)
 
     const fetchUsers = async () => {
         try {
@@ -27,6 +29,12 @@ const Users = () => {
     }, [])
 
     const handleRoleUpdate = async (userId, currentRole) => {
+        // Double check safety
+        if (currentUser.role !== 'owner') {
+            toast.error("Only Owners can manage user roles")
+            return
+        }
+
         const newRole = currentRole === 'user' ? 'admin' : 'user'
         if (window.confirm(`Are you sure you want to change role to ${newRole}?`)) {
             try {
@@ -73,18 +81,23 @@ const Users = () => {
                                 <td>{user.name}</td>
                                 <td>{user.email}</td>
                                 <td>
-                                    <span className={`badge ${user.role === 'admin' ? 'bg-success' : 'bg-secondary'}`}>
+                                    <span className={`badge ${
+                                        user.role === 'admin' ? 'bg-success' : 
+                                        user.role === 'owner' ? 'bg-danger' : 'bg-secondary'
+                                    }`}>
                                         {user.role}
                                     </span>
                                 </td>
                                 <td>
-                                    <button 
-                                        className="btn btn-sm btn-outline-primary"
-                                        onClick={() => handleRoleUpdate(user._id, user.role)}
-                                        title="Change Role"
-                                    >
-                                        <i className="bi bi-person-gear"></i> Change Role
-                                    </button>
+                                    {currentUser.role === 'owner' && user.role !== 'owner' && (
+                                        <button 
+                                            className="btn btn-sm btn-outline-primary"
+                                            onClick={() => handleRoleUpdate(user._id, user.role)}
+                                            title="Change Role"
+                                        >
+                                            <i className="bi bi-person-gear"></i> Change Role
+                                        </button>
+                                    )}
                                 </td>
                             </tr>
                         ))}

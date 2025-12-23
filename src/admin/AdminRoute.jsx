@@ -11,8 +11,8 @@ const AdminRoute = () => {
         return <Navigate to="/login" />
     }
 
-    if (user.role !== 'admin') {
-        toast.error("Access denied: Admins only")
+    if (!['admin', 'owner'].includes(user.role)) {
+        toast.error("Access denied: Admins/Owners only")
         return <Navigate to="/" />
     }
 

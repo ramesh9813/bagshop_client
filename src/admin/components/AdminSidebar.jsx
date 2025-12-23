@@ -29,8 +29,14 @@ const AdminSidebar = () => {
       </li>
       <li>
         <Link to="/admin/users" className="nav-link text-white">
-         <i class="bi bi-people-fill me-2"></i>
+         <i className="bi bi-people-fill me-2"></i>
            Users
+        </Link>
+      </li>
+      <li>
+        <Link to="/admin/inquiries" className="nav-link text-white">
+         <i className="bi bi-chat-left-text-fill me-2"></i>
+           Inquiries
         </Link>
       </li>
     </ul>

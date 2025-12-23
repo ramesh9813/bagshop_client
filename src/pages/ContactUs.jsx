@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
@@ -13,6 +13,9 @@ const ContactUs = () => {
         subject: '',
         message: ''
     });
+    const [image, setImage] = useState(null);
+    const [imagePreview, setImagePreview] = useState(null);
+    const fileInputRef = useRef(null);
 
     useEffect(() => {
         if (user) {
@@ -38,18 +41,64 @@ const ContactUs = () => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = (e) => {
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setImage(file);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreview(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // In a real application, you would send this data to your backend
-        console.log('Form Submitted:', formData);
-        toast.success("Thank you for your inquiry! We will contact you shortly.");
-        setFormData({
-            name: user ? user.name : '',
-            email: user ? user.email : '',
-            product: '',
-            subject: '',
-            message: ''
-        });
+        
+        const data = new FormData();
+        data.append('name', formData.name);
+        data.append('email', formData.email);
+        data.append('product', formData.product);
+        data.append('subject', formData.subject);
+        data.append('message', formData.message);
+        if (user) {
+            data.append('user', user._id);
+        }
+        if (image) {
+            data.append('image', image);
+        }
+
+        try {
+            const config = {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            };
+            
+            await axios.post(`${import.meta.env.VITE_API_BASE_URL}/inquiry/new`, data, config);
+            
+            toast.success("Thank you for your inquiry! We will contact you shortly.");
+            
+            // Reset form fields except name and email
+            setFormData(prev => ({
+                ...prev,
+                product: '',
+                subject: '',
+                message: ''
+            }));
+            
+            // Clear image state and DOM input
+            setImage(null);
+            setImagePreview(null);
+            if (fileInputRef.current) {
+                fileInputRef.current.value = "";
+            }
+            
+        } catch (error) {
+            console.error("Error submitting inquiry", error);
+            toast.error(error.response?.data?.message || "Something went wrong. Please try again.");
+        }
     };
 
     return (
@@ -64,7 +113,7 @@ const ContactUs = () => {
                                 Fill out the form below and our team will get back to you as soon as possible.
                             </p>
 
-                            <form onSubmit={handleSubmit}>
+                            <form onSubmit={handleSubmit} encType="multipart/form-data">
                                 <div className="row">
                                     <div className="col-md-6 mb-3">
                                         <label htmlFor="name" className="form-label">Name</label>
@@ -135,6 +184,25 @@ const ContactUs = () => {
                                         onChange={handleChange} 
                                         required
                                     ></textarea>
+                                </div>
+
+                                <div className="mb-3">
+                                    <label htmlFor="image" className="form-label">Upload Image (Optional)</label>
+                                    <input 
+                                        ref={fileInputRef}
+                                        type="file" 
+                                        className="form-control" 
+                                        id="image" 
+                                        accept="image/*"
+                                        onChange={handleImageChange}
+                                    />
+                                    <div className="form-text">e.g., Image of a damaged product. Max size 5MB.</div>
+                                    
+                                    {imagePreview && (
+                                        <div className="mt-3">
+                                            <img src={imagePreview} alt="Preview" className="img-thumbnail" style={{ maxWidth: '200px' }} />
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="d-grid gap-2">

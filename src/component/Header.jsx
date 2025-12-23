@@ -156,7 +156,7 @@ const Header = () => {
                   className={`dropdown-menu text-small ${showDropdown ? 'show' : ''}`}
                   style={showDropdown ? { display: 'block', position: 'absolute', right: 0, top: '100%', zIndex: 1000 } : {}}
                 >
-                  {user && user.role === 'admin' && (
+                  {user && ['admin', 'owner'].includes(user.role) && (
                     <li><Link className="dropdown-item" to="/admin">Dashboard </Link></li>
                   )}
                   <li><Link className="dropdown-item" to="/orders/me">My Orders</Link></li>

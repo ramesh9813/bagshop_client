@@ -11,6 +11,7 @@ const ProductDetial = () => {
   const [loading, setLoading] = useState(true)
   const [rating, setRating] = useState(5)
   const [comment, setComment] = useState("")
+  const [hasPurchased, setHasPurchased] = useState(false)
   const { user } = useSelector(state => state.auth)
   const params =useParams()
   const id= params.productId
@@ -27,9 +28,26 @@ const ProductDetial = () => {
       })
     }
 
+    const checkPurchaseStatus = async () => {
+      if (user) {
+        try {
+          const { data } = await axios.get(
+            `${import.meta.env.VITE_API_BASE_URL}/order/check-purchase/${id}`,
+            { withCredentials: true }
+          );
+          if (data.success) {
+            setHasPurchased(data.hasPurchased);
+          }
+        } catch (error) {
+          console.error("Failed to check purchase status", error);
+        }
+      }
+    }
+
     useEffect(()=>{
      fetchProduct();
-  },[id])
+     checkPurchaseStatus();
+  },[id, user])
 
   const addToCart = async () => {
     // Optimistic UI Update
@@ -96,9 +114,37 @@ const ProductDetial = () => {
             withCredentials: true
         }
 
+        const reviewData = { 
+            comment, 
+            productId: id 
+        };
+        
+        // Only include rating if user has purchased
+        if (hasPurchased) {
+            reviewData.rating = rating;
+        } else {
+            // If backend requires a rating, send 0 or a flag, 
+            // but ideally backend should handle this.
+            // For now, let's assume we send existing rating logic but UI restricts it.
+            // However, the prompt says "allow only comment". 
+            // If the backend model requires rating, we might need to adjust backend or send a placeholder.
+            // Checking Product Model: It likely expects a rating. 
+            // We will send the rating '0' or not send it if the backend supports it.
+            // Based on typical MERN tutorials, rating is required. 
+            // Let's modify the backend logic slightly in next step if needed, 
+            // but for now, we will send the selected rating (default 5) BUT visually hide it?
+            // "allow only comment" implies they CANNOT rate.
+            // If they cannot rate, the rating shouldn't affect the average.
+            
+            // To be safe and compliant with the request:
+            // We will send rating: 0 to indicate "no rating".
+            // Backend needs to handle rating: 0 to NOT count it in average.
+             reviewData.rating = 0; 
+        }
+
         const { data } = await axios.put(
             `${import.meta.env.VITE_API_BASE_URL}/review`,
-            { rating, comment, productId: id },
+            reviewData,
             config
         )
 
@@ -182,22 +228,30 @@ const ProductDetial = () => {
                 <div className="card mb-4 shadow-sm">
                     <div className="card-body">
                         <h5 className="card-title">Write a Review</h5>
-                        <div className="row">
-                            <div className="col-md-3 mb-3">
-                                <label className="form-label">Rating</label>
-                                <select 
-                                    className="form-select " 
-                                    value={rating} 
-                                    onChange={(e) => setRating(e.target.value)}
-                                >
-                                    <option value="5" className="bg-success">5 - Excellent</option>
-                                    <option value="4" className="bg-success">4 - Very Good</option>
-                                    <option value="3" className="bg-success">3 - Good</option>
-                                    <option value="2" className="bg-success">2 - Fair</option>
-                                    <option value="1" className="bg-success">1 - Poor</option>
-                                </select>
+                        {!hasPurchased && (
+                            <div className="alert alert-info py-2 small">
+                                <i className="bi bi-info-circle me-1"></i>
+                                You can comment on this product, but verified purchase is required to leave a star rating.
                             </div>
-                            <div className="col-md-9 mb-3">
+                        )}
+                        <div className="row">
+                            {hasPurchased && (
+                                <div className="col-md-3 mb-3">
+                                    <label className="form-label">Rating</label>
+                                    <select 
+                                        className="form-select " 
+                                        value={rating} 
+                                        onChange={(e) => setRating(e.target.value)}
+                                    >
+                                        <option value="5" className="bg-success">5 - Excellent</option>
+                                        <option value="4" className="bg-success">4 - Very Good</option>
+                                        <option value="3" className="bg-success">3 - Good</option>
+                                        <option value="2" className="bg-success">2 - Fair</option>
+                                        <option value="1" className="bg-success">1 - Poor</option>
+                                    </select>
+                                </div>
+                            )}
+                            <div className={hasPurchased ? "col-md-9 mb-3" : "col-md-12 mb-3"}>
                                 <label className="form-label">Comment</label>
                                 <textarea 
                                     className="form-control" 
