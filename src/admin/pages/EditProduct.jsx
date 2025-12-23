@@ -134,7 +134,7 @@ const EditProduct = () => {
                                     <ErrorMessage name="imageUrl" component="div" className="text-danger small" />
                                 </div>
 
-                                <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
+                                <button type="submit" className="btn btn-dark" disabled={isSubmitting}>
                                     {isSubmitting ? 'Updating...' : 'Update Product'}
                                 </button>
                                 <button type="button" className="btn btn-secondary ms-2" onClick={() => navigate('/admin/products')}>Cancel</button>

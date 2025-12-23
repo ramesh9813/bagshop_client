@@ -1,10 +1,10 @@
-import React, { useState,useEffect } from 'react'
-import {useParams} from 'react-router-dom'
-import axios  from 'axios'
-import { toast } from 'react-toastify';
-import Accordion from 'react-bootstrap/Accordion';
-import Spinner from '../component/Spinner';
-import { useSelector } from 'react-redux';
+import React, { useState, useEffect } from 'react'
+import { useParams, Link } from 'react-router-dom'
+import axios from 'axios'
+import { toast } from 'react-toastify'
+import Accordion from 'react-bootstrap/Accordion'
+import Spinner from '../component/Spinner'
+import { useSelector } from 'react-redux'
 
 const ProductDetial = () => {
   const [product,setProduct]=useState({})
@@ -12,6 +12,7 @@ const ProductDetial = () => {
   const [rating, setRating] = useState(5)
   const [comment, setComment] = useState("")
   const [hasPurchased, setHasPurchased] = useState(false)
+  const [showInquiryBtn, setShowInquiryBtn] = useState(false)
   const { user } = useSelector(state => state.auth)
   const params =useParams()
   const id= params.productId
@@ -61,8 +62,15 @@ const ProductDetial = () => {
         const existingItemIndex = localCart.findIndex(item => item.product._id === product._id);
 
         if (existingItemIndex !== -1) {
-             // Item exists: Increment quantity and use PUT /cart/update
+             // Item exists: Check stock before incrementing
              const newQuantity = localCart[existingItemIndex].quantity + 1;
+
+             if (newQuantity > product.stock) {
+                toast.warning(`No more items remaining in stock. Max available: ${product.stock}`);
+                setShowInquiryBtn(true);
+                return;
+             }
+
              localCart[existingItemIndex].quantity = newQuantity;
              localStorage.setItem('cart', JSON.stringify(localCart));
              toast.success("Item quantity updated");
@@ -78,7 +86,13 @@ const ProductDetial = () => {
                 config
             );
         } else {
-             // Item is new: Add to cart and use POST /cart/add
+             // Item is new: Check if in stock
+            if (product.stock < 1) {
+                toast.error("Sorry, this item is out of stock.");
+                setShowInquiryBtn(true);
+                return;
+            }
+
             localCart.push(optimisticItem);
             localStorage.setItem('cart', JSON.stringify(localCart));
             toast.success("Item added to cart");
@@ -160,6 +174,32 @@ const ProductDetial = () => {
 
   return (
     <>
+    <style>
+      {`
+        .product-description-accordion .accordion-button:not(.collapsed) {
+          background-color: #ffffff !important;
+          color: #000000 !important;
+          box-shadow: none !important;
+        }
+        .product-description-accordion .accordion-button:focus {
+          border-color: #dee2e6 !important;
+          box-shadow: none !important;
+        }
+        .product-description-accordion .accordion-button {
+          font-weight: bold;
+          padding: 1rem 0;
+          border: none;
+          border-bottom: 1px solid #dee2e6;
+        }
+        .product-description-accordion .accordion-item {
+          border: none;
+        }
+        .product-description-accordion .accordion-body {
+          padding: 1rem 0;
+          color: #495057;
+        }
+      `}
+    </style>
     <div className="container">
       {loading ? (
         <Spinner />
@@ -187,7 +227,7 @@ const ProductDetial = () => {
 
             <h2 className='text-warning'>NRS {product.price}</h2>
             
-            <Accordion defaultActiveKey="0" className="mb-3">
+            <Accordion defaultActiveKey="0" className="mb-3 product-description-accordion">
             <Accordion.Item eventKey="0">
               <Accordion.Header>Description</Accordion.Header>
               <Accordion.Body>
@@ -213,6 +253,21 @@ const ProductDetial = () => {
               >
                 <i className="bi bi-cart-plus me-2"></i> {product.stock > 0 ? "ADD TO CART" : "OUT OF STOCK"}
               </button>
+
+              {showInquiryBtn && (
+                <div className="mt-3">
+                  <Link 
+                    to="/contact" 
+                    state={{ 
+                      subject: 'More item needed', 
+                      productName: product.name 
+                    }} 
+                    className="btn btn-outline-secondary w-100 bg-light text-dark"
+                  >
+                    <i className="bi bi-envelope-plus me-2"></i> Request More Stock for this Item
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         </div>

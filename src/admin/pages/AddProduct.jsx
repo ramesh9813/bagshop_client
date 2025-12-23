@@ -121,7 +121,7 @@ const AddProduct = () => {
                                 <ErrorMessage name="imageUrl" component="div" className="text-danger small" />
                             </div>
 
-                            <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
+                            <button type="submit" className="btn btn-dark" disabled={isSubmitting}>
                                 {isSubmitting ? 'Creating...' : 'Add Product'}
                             </button>
                         </Form>

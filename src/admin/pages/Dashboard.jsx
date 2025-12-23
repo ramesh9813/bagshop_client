@@ -46,61 +46,58 @@ const Dashboard = () => {
             <>
             <div className="row mt-4">
                 <div className="col-md-3">
-                    <div className="card text-white bg-primary mb-3 shadow">
-                        <div className="card-header d-flex justify-content-between align-items-center">
-                            Total Sales
-                            <i className="bi bi-cash-stack fs-4"></i>
+                    <div className="card text-dark bg-light mb-3 shadow-sm border-0">
+                        <div className="card-header bg-transparent border-0 d-flex justify-content-between align-items-center pb-0">
+                            <span className="text-uppercase small fw-bold text-muted">Total Sales</span>
+                            <i className="bi bi-cash-stack fs-4 text-success"></i>
                         </div>
-                        <div className="card-body">
-                            <h5 className="card-title">NRS {stats.totalSales.toLocaleString()}</h5>
-                        </div>
-                    </div>
-                </div>
-                <div className="col-md-3">
-                    <div className="card text-white bg-success mb-3 shadow">
-                        <div className="card-header d-flex justify-content-between align-items-center">
-                            Total Orders
-                            <i className="bi bi-bag-check fs-4"></i>
-                        </div>
-                        <div className="card-body">
-                            <h5 className="card-title">{stats.ordersCount}</h5>
-                            <Link to="/admin/orders" className="text-white text-decoration-none small">View Details &rarr;</Link>
+                        <div className="card-body pt-0">
+                            <h3 className="card-title fw-bold">NRS {stats.totalSales.toLocaleString()}</h3>
+                            <Link to="/admin/orders" className="text-primary text-decoration-none small">View Details &rarr;</Link>
                         </div>
                     </div>
                 </div>
                 <div className="col-md-3">
-                    <div className="card text-white bg-warning mb-3 shadow">
-                        <div className="card-header d-flex justify-content-between align-items-center">
-                            Products
-                            <i className="bi bi-box-seam fs-4"></i>
+                    <div className="card text-dark bg-light mb-3 shadow-sm border-0">
+                        <div className="card-header bg-transparent border-0 d-flex justify-content-between align-items-center pb-0">
+                            <span className="text-uppercase small fw-bold text-muted">Total Orders</span>
+                            <i className="bi bi-bag-check fs-4 text-primary"></i>
                         </div>
-                        <div className="card-body">
-                            <h5 className="card-title">{stats.productsCount}</h5>
-                            <Link to="/admin/products" className="text-white text-decoration-none small">View Details &rarr;</Link>
+                        <div className="card-body pt-0">
+                            <h3 className="card-title fw-bold">{stats.ordersCount}</h3>
+                            <Link to="/admin/orders" className="text-primary text-decoration-none small">View Details &rarr;</Link>
                         </div>
                     </div>
                 </div>
                 <div className="col-md-3">
-                    <div className="card text-white bg-danger mb-3 shadow">
-                        <div className="card-header d-flex justify-content-between align-items-center">
-                            Users
-                            <i className="bi bi-people fs-4"></i>
+                    <div className="card text-dark bg-light mb-3 shadow-sm border-0">
+                        <div className="card-header bg-transparent border-0 d-flex justify-content-between align-items-center pb-0">
+                            <span className="text-uppercase small fw-bold text-muted">Products</span>
+                            <i className="bi bi-box-seam fs-4 text-warning"></i>
                         </div>
-                        <div className="card-body">
-                            <h5 className="card-title">{stats.usersCount}</h5>
-                            <Link to="/admin/users" className="text-white text-decoration-none small">View Details &rarr;</Link>
+                        <div className="card-body pt-0">
+                            <h3 className="card-title fw-bold">{stats.productsCount}</h3>
+                            <Link to="/admin/products" className="text-primary text-decoration-none small">View Details &rarr;</Link>
+                        </div>
+                    </div>
+                </div>
+                <div className="col-md-3">
+                    <div className="card text-dark bg-light mb-3 shadow-sm border-0">
+                        <div className="card-header bg-transparent border-0 d-flex justify-content-between align-items-center pb-0">
+                            <span className="text-uppercase small fw-bold text-muted">Users</span>
+                            <i className="bi bi-people fs-4 text-danger"></i>
+                        </div>
+                        <div className="card-body pt-0">
+                            <h3 className="card-title fw-bold">{stats.usersCount}</h3>
+                            <Link to="/admin/users" className="text-primary text-decoration-none small">View Details &rarr;</Link>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div className="row mt-4">
-                <div className="col-lg-6">
+                <div className="col-12">
                     <SalesChart />
-                </div>
-                {/* Future component placeholder */}
-                <div className="col-lg-6">
-                    {/* Add another chart or widget here later */}
                 </div>
             </div>
             </>

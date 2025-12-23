@@ -45,8 +45,14 @@ const addToCart = async (e) => {
       const existingItemIndex = localCart.findIndex(item => item.product._id === product._id);
 
       if (existingItemIndex !== -1) {
-          // Item exists: Increment quantity and use PUT /cart/update
+          // Item exists: Check stock before incrementing
           const newQuantity = localCart[existingItemIndex].quantity + 1;
+          
+          if (newQuantity > product.stock) {
+              toast.warning(`No more items remaining in stock. Max available: ${product.stock}`);
+              return;
+          }
+
           localCart[existingItemIndex].quantity = newQuantity;
           localStorage.setItem('cart', JSON.stringify(localCart));
           toast.success("Item quantity updated");
@@ -59,7 +65,12 @@ const addToCart = async (e) => {
           );
 
       } else {
-          // Item is new: Add to cart and use POST /cart/add
+          // Item is new: Check if at least 1 is in stock
+          if (product.stock < 1) {
+              toast.error("Sorry, this item is out of stock.");
+              return;
+          }
+
           localCart.push(optimisticItem);
           localStorage.setItem('cart', JSON.stringify(localCart));
           toast.success("Item added to cart");

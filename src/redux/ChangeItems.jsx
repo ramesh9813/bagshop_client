@@ -14,7 +14,7 @@ const ChangeItems = () => {
     <div className="my-3">
         <div className="row d-flex justify-content-around">
             <div className="col-3">
-            <button className="btn btn-primary" onClick={add}>ADD</button>
+            <button className="btn btn-dark" onClick={add}>ADD</button>
             </div>
             <div className="col-3">
             <button className="btn btn-warning" onClick={remove}>REMOVE</button>

@@ -70,7 +70,7 @@ const OrderList = () => {
         ) : (
             <div className="table-responsive">
                 <table className="table table-striped table-hover align-middle">
-                    <thead className="table-dark">
+                    <thead className="table-light">
                         <tr>
                             <th scope="col">Order ID</th>
                             <th scope="col">Items Qty</th>

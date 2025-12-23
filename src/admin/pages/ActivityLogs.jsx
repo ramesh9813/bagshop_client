@@ -28,7 +28,7 @@ const ActivityLogs = () => {
     const getActionBadge = (action) => {
         const colors = {
             'CREATE': 'bg-success',
-            'UPDATE': 'bg-primary',
+            'UPDATE': 'bg-secondary',
             'DELETE': 'bg-danger',
             'CHANGE_ROLE': 'bg-warning text-dark',
             'UPDATE_STATUS': 'bg-info text-dark'

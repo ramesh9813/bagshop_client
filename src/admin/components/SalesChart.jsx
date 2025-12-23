@@ -126,21 +126,56 @@ const SalesChart = () => {
 
     const dataPoints = labels.map(label => salesMap[label]);
 
+    // --- Trendline / Projection Logic ---
+    let projectedValue = 0;
+    let nextLabel = "";
+    
+    if (dataPoints.length > 0) {
+        // Simple Average Projection: Take the average of non-zero points to predict next
+        const nonZeroPoints = dataPoints.filter(p => p > 0);
+        const avgValue = nonZeroPoints.length > 0 
+            ? nonZeroPoints.reduce((a, b) => a + b, 0) / nonZeroPoints.length 
+            : 0;
+        
+        // Add a bit of "momentum" (last point vs average)
+        const lastPoint = dataPoints[dataPoints.length - 1];
+        projectedValue = (avgValue + lastPoint) / 2;
+
+        if (range === 'today') nextLabel = "Next Hour";
+        else if (range === 'week') nextLabel = "Next Day";
+        else if (range === 'month') nextLabel = "Next Week";
+        else if (range === 'year') nextLabel = "Next Month";
+        else nextLabel = "Forecast";
+    }
+
+    const extendedLabels = [...labels, nextLabel];
+    const projectionPoints = new Array(labels.length - 1).fill(null);
+    projectionPoints.push(dataPoints[dataPoints.length - 1]); // Connect to last real point
+    projectionPoints.push(projectedValue);
+
     setChartData({
-        labels,
+        labels: extendedLabels,
         datasets: [
           {
-            label: 'Sales (NRS)',
+            label: 'Actual Sales (NRS)',
             data: dataPoints,
-            borderColor: '#28a745', // Green line
-            backgroundColor: 'rgba(40, 167, 69, 0.1)', // Light green fill
-            pointBackgroundColor: 'red', // Red dots
-            pointBorderColor: 'red',
-            pointRadius: dataPoints.map(val => val > 0 ? 5 : 0), 
-            pointHoverRadius: dataPoints.map(val => val > 0 ? 7 : 0),
+            borderColor: '#28a745', 
+            backgroundColor: 'rgba(40, 167, 69, 0.1)',
+            pointBackgroundColor: '#28a745',
+            pointRadius: 4,
             tension: 0.3,
             fill: true
           },
+          {
+            label: 'Projected Trend',
+            data: projectionPoints,
+            borderColor: '#ffc107', // Yellow for warning/prediction
+            borderDash: [5, 5], // Dashed line
+            pointBackgroundColor: '#ffc107',
+            pointRadius: 6,
+            tension: 0.3,
+            fill: false
+          }
         ],
       });
   };
@@ -197,7 +232,7 @@ const SalesChart = () => {
         <div className="card-body">
             <div className="chart-area">
                 {chartData.labels.length > 0 ? (
-                    <Line options={options} data={chartData} height={300} />
+                    <Line options={options} data={chartData} height={400} />
                 ) : (
                     <p className="text-center py-5">No sales data available for this period.</p>
                 )}

@@ -65,7 +65,7 @@ const Users = () => {
         ) : (
             <div className="table-responsive">
                 <table className="table table-striped table-hover align-middle">
-                    <thead className="table-dark">
+                    <thead className="table-light">
                         <tr>
                             <th scope="col">ID</th>
                             <th scope="col">Name</th>
@@ -83,7 +83,7 @@ const Users = () => {
                                 <td>
                                     <span className={`badge ${
                                         user.role === 'admin' ? 'bg-success' : 
-                                        user.role === 'owner' ? 'bg-danger' : 'bg-secondary'
+                                        user.role === 'owner' ? 'bg-warning text-dark' : 'bg-secondary'
                                     }`}>
                                         {user.role}
                                     </span>

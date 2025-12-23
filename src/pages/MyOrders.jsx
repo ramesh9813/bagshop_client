@@ -46,7 +46,7 @@ const MyOrders = () => {
                     ) : (
                         <div className="table-responsive">
                             <table className="table table-striped table-hover align-middle">
-                                <thead className="table-dark">
+                                <thead className="table-light">
                                     <tr>
                                         <th scope="col">Order ID</th>
                                         <th scope="col">Date</th>
@@ -75,7 +75,7 @@ const MyOrders = () => {
                                                 </span>
                                             </td>
                                             <td>
-                                                <Link to={`/order/${order._id}`} className="btn btn-sm btn-primary">
+                                                <Link to={`/order/${order._id}`} className="btn btn-sm btn-outline-dark">
                                                     View Details
                                                 </Link>
                                             </td>

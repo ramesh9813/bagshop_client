@@ -34,6 +34,7 @@ import About from './pages/About'
 import Features from './pages/Features'
 import FAQs from './pages/FAQs'
 import ContactUs from './pages/ContactUs'
+import NotFound from './pages/NotFound'
 
 const MyRoute = () => {
   return (
@@ -58,6 +59,7 @@ const MyRoute = () => {
               <Route path='contact' element={<ContactUs/>}/>
               
               <Route path='redux' element={<CartItems/>}/>
+              <Route path='*' element={<NotFound/>}/>
             </Route>
 
             {/* Admin Routes */}

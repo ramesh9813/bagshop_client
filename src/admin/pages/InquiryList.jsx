@@ -40,7 +40,7 @@ const InquiryList = () => {
         ) : (
             <div className="table-responsive">
                 <table className="table table-striped table-hover align-middle">
-                    <thead className="table-dark">
+                    <thead className="table-light">
                         <tr>
                             <th scope="col">Date</th>
                             <th scope="col">Name</th>

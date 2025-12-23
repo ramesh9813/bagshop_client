@@ -58,9 +58,17 @@ const Cart = () => {
     const updateQuantity = async (productId, newQuantity) => {
         if (newQuantity < 1) return;
         
-        // Find old quantity to determine toast type
-        const oldItem = cartItems.find(item => item.product._id === productId);
-        const oldQuantity = oldItem ? oldItem.quantity : newQuantity;
+        // Find item to check stock
+        const item = cartItems.find(item => item.product._id === productId);
+        if (!item) return;
+
+        // Check if increasing beyond stock
+        if (newQuantity > item.product.stock) {
+            toast.warning(`No more items remaining in stock. Max available: ${item.product.stock}`);
+            return;
+        }
+        
+        const oldQuantity = item.quantity;
 
         // Optimistic Update
         const previousItems = [...cartItems];
@@ -143,7 +151,7 @@ const Cart = () => {
                                                     </div>
 
                                                     <div className="col-3">
-                                                        <button className='btn btn-primary' style={{backgroundColor: '#2ecc71'}} onClick={()=>updateQuantity(item.product._id, item.quantity + 1)}>+</button>
+                                                        <button className='btn' style={{backgroundColor: '#2ecc71', color: 'white'}} onClick={()=>updateQuantity(item.product._id, item.quantity + 1)}>+</button>
                                                         &nbsp;
                                                         <span>{item.quantity}</span>
                                                         &nbsp;

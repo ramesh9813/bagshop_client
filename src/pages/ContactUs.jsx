@@ -2,9 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 
 const ContactUs = () => {
     const { user } = useSelector(state => state.auth);
+    const location = useLocation();
     const [products, setProducts] = useState([]);
     const [formData, setFormData] = useState({
         name: '',
@@ -17,6 +19,7 @@ const ContactUs = () => {
     const [imagePreview, setImagePreview] = useState(null);
     const fileInputRef = useRef(null);
 
+    // Initial population of name and email from user context
     useEffect(() => {
         if (user) {
             setFormData(prev => ({
@@ -27,6 +30,20 @@ const ContactUs = () => {
         }
     }, [user]);
 
+    // Handle Pre-filled state from other pages (e.g. Product Detail)
+    useEffect(() => {
+        if (location.state) {
+            const { subject, productName } = location.state;
+            if (subject) {
+                setFormData(prev => ({ ...prev, subject }));
+            }
+            if (productName) {
+                setFormData(prev => ({ ...prev, product: productName }));
+            }
+        }
+    }, [location.search, location.state]);
+
+    // Fetch product list for the dropdown
     useEffect(() => {
         axios.get(`${import.meta.env.VITE_API_BASE_URL}/products`)
             .then(res => {
@@ -206,7 +223,7 @@ const ContactUs = () => {
                                 </div>
 
                                 <div className="d-grid gap-2">
-                                    <button type="submit" className="btn btn-primary btn-lg">Send Message</button>
+                                    <button type="submit" className="btn btn-dark btn-lg">Send Message</button>
                                 </div>
                             </form>
                         </div>

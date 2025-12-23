@@ -56,7 +56,7 @@ const PaymentSuccess = () => {
                         <i className="bi bi-check-circle-fill text-success" style={{ fontSize: "4rem" }}></i>
                         <h2 className="text-success mt-3">Payment Successful!</h2>
                         <p className="lead">Your order has been placed successfully.</p>
-                        <Link to="/" className="btn btn-primary mt-3">Go to Home</Link>
+                        <Link to="/" className="btn btn-outline-dark mt-3">Go to Home</Link>
                     </>
                 )}
 

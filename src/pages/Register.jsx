@@ -2,7 +2,7 @@ import React from 'react'
 import { Formik, Form, Field,ErrorMessage } from 'formik'
 import * as Yup from 'yup'
 import axios from 'axios'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -72,53 +72,62 @@ const Register = () => {
     }}
     >
         <div className="container">
-            <div className="row d-flex justify-content-center mt-3">
+            <div className="row d-flex justify-content-center mt-5">
                 <div className="col-md-5">
-                    <Form>
-                        <div className="mb-3">
-                            <label htmlFor="fname"> First Name</label>
-                            <Field type="text" name="fname" id='fname' className="form-control"></Field>
-                            <ErrorMessage name="fname">
-                                    {msg=><div style={{color:'red'}}>{msg}</div>}
-                            </ErrorMessage>
-                           <div/>
-                           
-                           <div className="mb-3">
-                            <label htmlFor="lname"> Last Name</label>
-                            <Field type="text" name="lname" id='lname' className="form-control"></Field>
-                            <ErrorMessage name="lname">
-                                    {msg=><div style={{color:'red'}}>{msg}</div>}
-                            </ErrorMessage>
-                           </div>
-                        
-                        <div className="mb-3">
-                            <label htmlFor="email"> Email</label>
-                            <Field type="text" name="email" id='email' className="form-control"></Field>
-                            <ErrorMessage name="email">
-                                    {msg=><div style={{color:'red'}}>{msg}</div>}
-                            </ErrorMessage>
-                        </div>
-                        
-                        <div className="mb-3">
-                            <label htmlFor="password"> Password</label>
-                            <Field type="password" name="password" id="password" className="form-control"></Field>
-                            <ErrorMessage name="password">
-                                    {msg=><div style={{color:'red'}}>{msg}</div>}
-                            </ErrorMessage>
-                        </div>
-                        
-                        <div className="mb-3">
-                            <label htmlFor="cpassword">Conform Password</label>
-                            <Field type="password" name="cpassword" id="cpassword" className="form-control"></Field>
-                            <ErrorMessage name="cpassword">
-                                    {msg=><div style={{color:'red'}}>{msg}</div>}
-                            </ErrorMessage>
-                        </div>
-                        <div className="mb-3">
-                            <button className='btn btn-warning' type="submit">Register </button>
-                        </div>
-                        </div>
-                    </Form>
+                    <div className="card shadow-sm p-4 border-0">
+                        <h1 className="h3 mb-4 fw-bold text-center">Create Account</h1>
+                        <Form>
+                            <div className="mb-3">
+                                <label htmlFor="fname"> First Name</label>
+                                <Field type="text" name="fname" id='fname' className="form-control"></Field>
+                                <ErrorMessage name="fname">
+                                        {msg=><div style={{color:'red', fontSize: '0.8rem'}}>{msg}</div>}
+                                </ErrorMessage>
+                            </div>
+                            
+                            <div className="mb-3">
+                                <label htmlFor="lname"> Last Name</label>
+                                <Field type="text" name="lname" id='lname' className="form-control"></Field>
+                                <ErrorMessage name="lname">
+                                        {msg=><div style={{color:'red', fontSize: '0.8rem'}}>{msg}</div>}
+                                </ErrorMessage>
+                            </div>
+                            
+                            <div className="mb-3">
+                                <label htmlFor="email"> Email</label>
+                                <Field type="text" name="email" id='email' className="form-control"></Field>
+                                <ErrorMessage name="email">
+                                        {msg=><div style={{color:'red', fontSize: '0.8rem'}}>{msg}</div>}
+                                </ErrorMessage>
+                            </div>
+                            
+                            <div className="mb-3">
+                                <label htmlFor="password"> Password</label>
+                                <Field type="password" name="password" id="password" className="form-control"></Field>
+                                <ErrorMessage name="password">
+                                        {msg=><div style={{color:'red', fontSize: '0.8rem'}}>{msg}</div>}
+                                </ErrorMessage>
+                            </div>
+                            
+                            <div className="mb-3">
+                                <label htmlFor="cpassword">Confirm Password</label>
+                                <Field type="password" name="cpassword" id="cpassword" className="form-control"></Field>
+                                <ErrorMessage name="cpassword">
+                                        {msg=><div style={{color:'red', fontSize: '0.8rem'}}>{msg}</div>}
+                                </ErrorMessage>
+                            </div>
+                            
+                            <div className="mb-3">
+                                <button className='btn btn-warning w-100 py-2 fw-bold text-dark' type="submit">Register</button>
+                            </div>
+
+                            <div className="text-center mt-4">
+                                <p className="text-muted small">
+                                    Already have an account? <Link to="/login" className="text-warning fw-bold text-decoration-none">Login Here</Link>
+                                </p>
+                            </div>
+                        </Form>
+                    </div>
                 </div>
             </div>
         </div>
