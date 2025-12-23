@@ -16,6 +16,9 @@ const AdminHeader = () => {
         if (path.includes('/admin/orders')) return 'Orders'
         if (path.includes('/admin/users')) return 'Users'
         if (path.includes('/admin/inquiries')) return 'Inquiries'
+        if (path.includes('/admin/analytics')) return 'Sales Analysis'
+        if (path.includes('/admin/activity')) return 'Activity Log'
+        if (path.includes('/admin/chat')) return 'AI Assistant'
         return 'Admin Panel'
     }
 

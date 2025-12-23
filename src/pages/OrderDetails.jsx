@@ -40,7 +40,7 @@ const OrderDetails = () => {
                 <div className="col-lg-8">
                     {/* Shipping Info */}
                     <div className="card shadow mb-4">
-                        <div className="card-header bg-primary text-white">Shipping Info</div>
+                        <div className="card-header bg-light text-dark fw-bold">Shipping Info</div>
                         <div className="card-body">
                             <p><strong>Name:</strong> {order.user && order.user.name}</p>
                             <p><strong>Phone:</strong> {order.shippingInfo && order.shippingInfo.phoneNo}</p>
@@ -53,7 +53,7 @@ const OrderDetails = () => {
 
                     {/* Payment Info */}
                     <div className="card shadow mb-4">
-                        <div className="card-header bg-primary text-white">Payment</div>
+                        <div className="card-header bg-light text-dark fw-bold">Payment</div>
                         <div className="card-body">
                             <p>
                                 <span className={order.paymentInfo && order.paymentInfo.status === "succeeded" ? "text-success fw-bold" : "text-danger fw-bold"}>
@@ -66,7 +66,7 @@ const OrderDetails = () => {
 
                     {/* Order Status */}
                     <div className="card shadow mb-4">
-                        <div className="card-header bg-primary text-white">Order Status</div>
+                        <div className="card-header bg-light text-dark fw-bold">Order Status</div>
                         <div className="card-body">
                             <p>
                                 <span 
@@ -86,7 +86,7 @@ const OrderDetails = () => {
                 <div className="col-lg-4">
                      {/* Order Items */}
                     <div className="card shadow mb-4">
-                        <div className="card-header bg-primary text-white">Order Items</div>
+                        <div className="card-header bg-light text-dark fw-bold">Order Items</div>
                         <div className="card-body">
                             {order.orderItems && order.orderItems.map(item => (
                                 <div key={item.product} className="row mb-3 align-items-center">

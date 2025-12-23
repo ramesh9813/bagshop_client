@@ -25,6 +25,9 @@ import OrderList from './admin/pages/OrderList'
 import Users from './admin/pages/Users'
 import InquiryList from './admin/pages/InquiryList'
 import InquiryDetails from './admin/pages/InquiryDetails'
+import OwnerAnalytics from './admin/pages/OwnerAnalytics'
+import ActivityLogs from './admin/pages/ActivityLogs'
+import ChatWithInventory from './admin/pages/ChatWithInventory'
 import MyOrders from './pages/MyOrders'
 import OrderDetails from './pages/OrderDetails'
 import About from './pages/About'
@@ -69,6 +72,9 @@ const MyRoute = () => {
                 <Route path='users' element={<Users/>}/>
                 <Route path='inquiries' element={<InquiryList/>}/>
                 <Route path='inquiry/:id' element={<InquiryDetails/>}/>
+                <Route path='analytics' element={<OwnerAnalytics/>}/>
+                <Route path='activity' element={<ActivityLogs/>}/>
+                <Route path='chat' element={<ChatWithInventory/>}/>
               </Route>
             </Route>
         </Routes>

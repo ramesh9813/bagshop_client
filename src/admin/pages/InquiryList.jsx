@@ -71,7 +71,7 @@ const InquiryList = () => {
                                 </td>
                                 <td>
                                     <span className={`badge ${
-                                        inquiry.status === 'New' ? 'bg-primary' : 
+                                        inquiry.status === 'New' ? 'bg-secondary' : 
                                         inquiry.status === 'Resolved' ? 'bg-success' : 'bg-warning text-dark'
                                     }`}>
                                         {inquiry.status}
