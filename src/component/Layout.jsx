@@ -12,7 +12,7 @@ const Layout = () => {
       <Header />
       <ShortcutOverlay />
       <ToastContainer 
-        position="top-right" 
+        position="top-left" 
         autoClose={3000} 
         theme="colored"
         hideProgressBar={false}
@@ -22,7 +22,7 @@ const Layout = () => {
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        style={{ zIndex: 9999, top: '80px' }} 
+        style={{ zIndex: 9999, top: '85px', left: '20px' }} 
       />
       <Outlet />
       <Footer />

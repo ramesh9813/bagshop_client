@@ -18,7 +18,10 @@ const VerifyEmailAction = () => {
             verificationAttempted.current = true;
 
             try {
-                const { data } = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/verify-email/${token}`);
+                const { data } = await axios.get(
+                    `${import.meta.env.VITE_API_BASE_URL}/verify-email/${token}`,
+                    { withCredentials: true }
+                );
                 
                 if (data.success) {
                     toast.success("Email Verified Successfully! Welcome to BagShop.");
