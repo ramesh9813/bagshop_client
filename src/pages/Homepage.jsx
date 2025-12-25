@@ -143,7 +143,7 @@ const Homepage = () => {
                <p className="lead mb-4">Subscribe for the latest trends in fashion, travel tips, and back-to-school offers.</p>
                <div className="input-group mb-3 w-75 mx-auto">
                  <input type="text" className="form-control" placeholder="Enter your email" aria-label="Recipient's email"/>
-                 <button className="btn btn-dark" type="button">Subscribe</button>
+                 <button className="btn btn-outline-warning" type="button">Subscribe</button>
                </div>
              </div>
            </div>

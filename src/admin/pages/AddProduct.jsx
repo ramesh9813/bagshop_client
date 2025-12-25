@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Formik, Form, Field, ErrorMessage } from 'formik'
 import * as Yup from 'yup'
 import axios from 'axios'
@@ -9,6 +9,8 @@ import { useSelector } from 'react-redux'
 const AddProduct = () => {
     const navigate = useNavigate()
     const { user } = useSelector(state => state.auth)
+    const [imageSource, setImageSource] = useState('file') // Default to local file
+    const [selectedFile, setSelectedFile] = useState(null)
 
     const initialValues = {
         name: '',
@@ -26,25 +28,39 @@ const AddProduct = () => {
         price: Yup.number().required('Price is required').positive('Price must be positive'),
         category: Yup.string().required('Category is required'),
         size: Yup.string().required('Size is required'),
-        imageUrl: Yup.string().url('Invalid URL').required('Image URL is required'),
+        imageUrl: Yup.string().when([], {
+            is: () => imageSource === 'url',
+            then: (schema) => schema.url('Invalid URL').required('Image URL is required'),
+            otherwise: (schema) => schema.notRequired()
+        }),
         stock: Yup.number().required('Stock is required').integer('Stock must be an integer').min(0, 'Stock cannot be negative')
     })
 
     const handleSubmit = async (values, { setSubmitting, resetForm }) => {
         try {
-            const config = {
-                headers: { "Content-Type": "application/json" },
-                withCredentials: true
+            const formData = new FormData();
+            
+            // Append all fields to FormData
+            Object.keys(values).forEach(key => {
+                if (key !== 'imageUrl' || imageSource === 'url') {
+                    formData.append(key, values[key]);
+                }
+            });
+
+            if (imageSource === 'file' && selectedFile) {
+                formData.append('image', selectedFile);
             }
 
-            const productData = {
-                ...values,
-                createdBy: user?._id // Send current user ID
+            formData.append('createdBy', user?._id);
+
+            const config = {
+                headers: { "Content-Type": "multipart/form-data" },
+                withCredentials: true
             }
 
             const { data } = await axios.post(
                 `${import.meta.env.VITE_API_BASE_URL}/product/new`,
-                productData,
+                formData,
                 config
             )
 
@@ -70,7 +86,7 @@ const AddProduct = () => {
                     validationSchema={validationSchema}
                     onSubmit={handleSubmit}
                 >
-                    {({ isSubmitting }) => (
+                    {({ isSubmitting, setFieldValue }) => (
                         <Form>
                             <div className="mb-3">
                                 <label htmlFor="name" className="form-label">Product Name</label>
@@ -116,12 +132,43 @@ const AddProduct = () => {
                             </div>
 
                             <div className="mb-3">
-                                <label htmlFor="imageUrl" className="form-label">Image URL</label>
-                                <Field type="text" className="form-control" id="imageUrl" name="imageUrl" placeholder="https://example.com/image.jpg" />
-                                <ErrorMessage name="imageUrl" component="div" className="text-danger small" />
+                                <label className="form-label d-block">Product Image</label>
+                                <div className="btn-group mb-3" role="group">
+                                    <input 
+                                        type="radio" className="btn-check" id="sourceFile" name="imageSource" 
+                                        checked={imageSource === 'file'} onChange={() => setImageSource('file')} 
+                                    />
+                                    <label className="btn btn-outline-warning" htmlFor="sourceFile">Upload File</label>
+
+                                    <input 
+                                        type="radio" className="btn-check" id="sourceUrl" name="imageSource" 
+                                        checked={imageSource === 'url'} onChange={() => setImageSource('url')} 
+                                    />
+                                    <label className="btn btn-outline-warning" htmlFor="sourceUrl">Image URL</label>
+                                </div>
+
+                                {imageSource === 'url' ? (
+                                    <>
+                                        <Field type="text" className="form-control" id="imageUrl" name="imageUrl" placeholder="https://example.com/image.jpg" />
+                                        <ErrorMessage name="imageUrl" component="div" className="text-danger small" />
+                                    </>
+                                ) : (
+                                    <div className="card p-3 bg-light border-dashed">
+                                        <input 
+                                            type="file" 
+                                            className="form-control" 
+                                            accept="image/*"
+                                            onChange={(e) => {
+                                                setSelectedFile(e.target.files[0]);
+                                                setFieldValue('imageUrl', 'file_selected'); // dummy to pass validation
+                                            }} 
+                                        />
+                                        <div className="small text-muted mt-2">Upload a JPG, PNG or WebP image.</div>
+                                    </div>
+                                )}
                             </div>
 
-                            <button type="submit" className="btn btn-dark" disabled={isSubmitting}>
+                            <button type="submit" className="btn btn-warning" disabled={isSubmitting}>
                                 {isSubmitting ? 'Creating...' : 'Add Product'}
                             </button>
                         </Form>

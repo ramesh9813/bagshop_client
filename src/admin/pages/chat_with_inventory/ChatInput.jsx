@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Dropdown from 'react-bootstrap/Dropdown';
 
 const ChatInput = ({ 
     handleSend, 
@@ -16,10 +17,6 @@ const ChatInput = ({
     providers, 
     filteredModels 
 }) => {
-    // We use standard Bootstrap dropdown classes, so we don't need manual state for visibility 
-    // unless we were building a custom one from scratch. 
-    // However, since this is a React component likely without bootstrap.js loaded for interactivity, 
-    // we will implement a simple click toggle state.
     const [isOpen, setIsOpen] = useState(false);
 
     const toggleDropdown = (e) => {
@@ -27,11 +24,26 @@ const ChatInput = ({
         setIsOpen(!isOpen);
     };
 
-    // Close dropdown when clicking outside (simple implementation or rely on user clicking toggle)
-    // For a cleaner UX in this snippet, we'll just toggle.
-
     return (
         <div className="bg-white p-2 p-md-3 pt-0">
+            <style>
+                {`
+                    .custom-context-menu .dropdown-item:hover, 
+                    .custom-context-menu .dropdown-item:focus,
+                    .custom-context-menu .dropdown-item:active,
+                    .custom-context-menu .dropdown-item.active {
+                        background-color: #ffc107 !important;
+                        color: black !important;
+                    }
+                    .custom-context-menu .dropdown-toggle::after {
+                        float: right;
+                        margin-top: 10px;
+                    }
+                    .custom-context-menu .btn-close:focus {
+                        box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25) !important;
+                    }
+                `}
+            </style>
             <div className="container-fluid" style={{ maxWidth: '950px' }}>
                 <form onSubmit={handleSend} className="d-flex align-items-center border rounded-pill shadow-sm bg-white px-2 px-md-3 py-1 gap-1 gap-md-2 position-relative">
                     
@@ -39,7 +51,7 @@ const ChatInput = ({
                     <div className="dropup position-relative">
                         <button 
                             type="button" 
-                            className="btn btn-link text-secondary p-1 border-0"
+                            className="btn btn-link text-secondary p-1 border-0 shadow-none"
                             onClick={toggleDropdown}
                             title="Chat Context Settings"
                         >
@@ -49,7 +61,7 @@ const ChatInput = ({
                         {/* Dropdown Menu */}
                         {isOpen && (
                             <div 
-                                className="dropdown-menu show shadow border-0 p-3" 
+                                className="dropdown-menu show shadow border-0 p-3 custom-context-menu" 
                                 style={{ 
                                     position: 'absolute', 
                                     bottom: '100%', 
@@ -68,40 +80,52 @@ const ChatInput = ({
                                 {/* Collection Selector */}
                                 <div className="mb-3">
                                     <label className="form-label small text-muted mb-1">Document Source</label>
-                                    <select 
-                                        className="form-select form-select-sm" 
-                                        value={selectedCollection}
-                                        onChange={(e) => setSelectedCollection(e.target.value)}
-                                        disabled={loading}
-                                    >
-                                        {collections.map(c => <option key={c} value={c}>{c}</option>)}
-                                    </select>
+                                    <Dropdown onSelect={(val) => setSelectedCollection(val)} drop="up">
+                                        <Dropdown.Toggle variant="white" className="w-100 text-start border btn-sm shadow-none">
+                                            {selectedCollection}
+                                        </Dropdown.Toggle>
+                                        <Dropdown.Menu className="w-100 shadow-sm border-0" style={{ zIndex: 1100 }}>
+                                            {collections.map(c => (
+                                                <Dropdown.Item key={c} eventKey={c} active={selectedCollection === c}>
+                                                    {c}
+                                                </Dropdown.Item>
+                                            ))}
+                                        </Dropdown.Menu>
+                                    </Dropdown>
                                 </div>
 
                                 {/* Provider Selector */}
                                 <div className="mb-3">
                                     <label className="form-label small text-muted mb-1">AI Provider</label>
-                                    <select 
-                                        className="form-select form-select-sm" 
-                                        value={selectedProvider}
-                                        onChange={handleProviderChange}
-                                        disabled={loading || modelsLoading}
-                                    >
-                                        {providers.map(p => <option key={p} value={p}>{p.toUpperCase()}</option>)}
-                                    </select>
+                                    <Dropdown onSelect={(val) => handleProviderChange({ target: { value: val } })} drop="up">
+                                        <Dropdown.Toggle variant="white" className="w-100 text-start border btn-sm shadow-none">
+                                            {selectedProvider.toUpperCase()}
+                                        </Dropdown.Toggle>
+                                        <Dropdown.Menu className="w-100 shadow-sm border-0" style={{ zIndex: 1100 }}>
+                                            {providers.map(p => (
+                                                <Dropdown.Item key={p} eventKey={p} active={selectedProvider === p}>
+                                                    {p.toUpperCase()}
+                                                </Dropdown.Item>
+                                            ))}
+                                        </Dropdown.Menu>
+                                    </Dropdown>
                                 </div>
 
                                 {/* Model Selector */}
                                 <div className="mb-1">
                                     <label className="form-label small text-muted mb-1">Model</label>
-                                    <select 
-                                        className="form-select form-select-sm" 
-                                        value={selectedModel}
-                                        onChange={(e) => setSelectedModel(e.target.value)}
-                                        disabled={loading || modelsLoading}
-                                    >
-                                        {filteredModels.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
-                                    </select>
+                                    <Dropdown onSelect={(val) => setSelectedModel(val)} drop="up">
+                                        <Dropdown.Toggle variant="white" className="w-100 text-start border btn-sm shadow-none">
+                                            {filteredModels.find(m => m.id === selectedModel)?.name || 'Select Model'}
+                                        </Dropdown.Toggle>
+                                        <Dropdown.Menu className="w-100 shadow-sm border-0" style={{ maxHeight: '250px', overflowY: 'auto', zIndex: 1100 }}>
+                                            {filteredModels.map(m => (
+                                                <Dropdown.Item key={m.id} eventKey={m.id} active={selectedModel === m.id}>
+                                                    {m.name}
+                                                </Dropdown.Item>
+                                            ))}
+                                        </Dropdown.Menu>
+                                    </Dropdown>
                                 </div>
                             </div>
                         )}

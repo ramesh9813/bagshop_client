@@ -37,6 +37,8 @@ import ContactUs from './pages/ContactUs'
 import NotFound from './pages/NotFound'
 import VerifyEmailNotice from './pages/VerifyEmailNotice'
 import VerifyEmailAction from './pages/VerifyEmailAction'
+import ShippingPolicy from './pages/ShippingPolicy'
+import PrivacyPolicy from './pages/PrivacyPolicy'
 
 const MyRoute = () => {
   return (
@@ -61,6 +63,8 @@ const MyRoute = () => {
               <Route path='features' element={<Features/>}/>
               <Route path='faqs' element={<FAQs/>}/>
               <Route path='contact' element={<ContactUs/>}/>
+              <Route path='shipping-policy' element={<ShippingPolicy/>}/>
+              <Route path='privacy-policy' element={<PrivacyPolicy/>}/>
               
               <Route path='redux' element={<CartItems/>}/>
               <Route path='*' element={<NotFound/>}/>

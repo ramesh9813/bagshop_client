@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useRef } from 'react';
 import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
+import { useDispatch } from 'react-redux';
 import 'react-toastify/dist/ReactToastify.css';
 import 'leaflet/dist/leaflet.css';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
@@ -17,18 +18,22 @@ L.Icon.Default.mergeOptions({
 
 const Checkout = () => {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const location = useLocation();
     const [address, setAddress] = useState('');
     const [city, setCity] = useState('');
     const [phoneNo, setPhoneNo] = useState('');
+    const [phoneError, setPhoneError] = useState('');
     const [shippingPrice, setShippingPrice] = useState(100); // Default shipping cost
     const [showMap, setShowMap] = useState(false);
     const [position, setPosition] = useState(null);
     const [paymentMethod, setPaymentMethod] = useState('eSewa');
+    const hasFetchedDefault = useRef(false);
 
     useEffect(() => {
-        if (location.state && location.state.useDefault) {
+        if (location.state && location.state.useDefault && !hasFetchedDefault.current) {
             fetchDefaultAddress();
+            hasFetchedDefault.current = true;
         }
     }, [location.state]);
 
@@ -68,8 +73,21 @@ const Checkout = () => {
         form.submit();
     };
 
-    const submitHandler = async (e) => {
-        e.preventDefault();
+    const submitHandler = async (e, forcedMethod = null) => {
+        if (e) e.preventDefault();
+        
+        const methodToUse = forcedMethod || paymentMethod;
+
+        // Nepali Phone Number Validation
+        const phoneRegex = /^(97|98)\d{8}$/;
+        if (!phoneRegex.test(phoneNo)) {
+            setPhoneError("Check your number");
+            toast.error("Please enter a valid Nepali phone number.");
+            return;
+        }
+
+        if (phoneError) return;
+
         try {
             const config = {
                 headers: {
@@ -87,7 +105,7 @@ const Checkout = () => {
                 shippingPrice,
                 paymentInfo: {
                     status: "Pending",
-                    method: paymentMethod
+                    method: methodToUse
                 }
             };
 
@@ -117,7 +135,11 @@ const Checkout = () => {
                 }
 
                 // Handle Logic based on Payment Method
-                if (paymentMethod === 'COD') {
+                if (methodToUse === 'COD') {
+                    // Clear Cart from Local Storage and Redux
+                    localStorage.removeItem('cart');
+                    dispatch({ type: 'SET_CART_COUNT', payload: 0 });
+                    
                     toast.success("Order Placed Successfully!");
                     navigate('/orders/me');
                 } else {
@@ -215,13 +237,24 @@ const Checkout = () => {
                                 <div className="mb-3">
                                     <label htmlFor="phoneNo" className="form-label">Phone Number</label>
                                     <input
-                                        type="number"
-                                        className="form-control"
+                                        type="tel"
+                                        className={`form-control ${phoneError ? 'is-invalid' : ''}`}
                                         id="phoneNo"
                                         value={phoneNo}
-                                        onChange={(e) => setPhoneNo(e.target.value)}
+                                        onChange={(e) => {
+                                            const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+                                            setPhoneNo(val);
+                                            const phoneRegex = /^(97|98)\d{8}$/;
+                                            if (val.length > 0 && !phoneRegex.test(val)) {
+                                                setPhoneError("Check your number (Must enter cell phone number)");
+                                            } else {
+                                                setPhoneError("");
+                                            }
+                                        }}
+                                        placeholder="98XXXXXXXX"
                                         required
                                     />
+                                    {phoneError && <div className="text-danger small mt-1">{phoneError}</div>}
                                 </div>
 
                                 <div className="mb-3">
@@ -236,16 +269,22 @@ const Checkout = () => {
 
                                 <div className="d-flex gap-2">
                                     <button 
-                                        type="submit" 
+                                        type="button" 
                                         className="btn btn-warning w-50 btn-lg"
-                                        onClick={() => setPaymentMethod('eSewa')}
+                                        onClick={(e) => {
+                                            setPaymentMethod('eSewa');
+                                            submitHandler(e, 'eSewa');
+                                        }}
                                     >
-                                        Place Order
+                                        <i className="bi bi-wallet2 me-2"></i> Proceed with eSewa
                                     </button>
                                     <button 
-                                        type="submit" 
+                                        type="button" 
                                         className="btn btn-secondary w-50 btn-lg"
-                                        onClick={() => setPaymentMethod('COD')}
+                                        onClick={(e) => {
+                                            setPaymentMethod('COD');
+                                            submitHandler(e, 'COD');
+                                        }}
                                     >
                                         <i className="bi bi-cash-stack me-2"></i> Cash on Delivery
                                     </button>

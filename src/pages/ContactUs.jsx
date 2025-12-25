@@ -223,7 +223,7 @@ const ContactUs = () => {
                                 </div>
 
                                 <div className="d-grid gap-2">
-                                    <button type="submit" className="btn btn-dark btn-lg">Send Message</button>
+                                    <button type="submit" className="btn btn-warning btn-lg">Send Message</button>
                                 </div>
                             </form>
                         </div>

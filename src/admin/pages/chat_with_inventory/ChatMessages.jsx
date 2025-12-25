@@ -35,7 +35,7 @@ const ChatMessages = ({ chatHistory, loading, chatEndRef }) => {
                 {loading && (
                     <div className="d-flex mb-4 justify-content-start">
                         <div className="p-3 text-muted small">
-                            <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                            <span className="spinner-border spinner-border-sm text-warning me-2" role="status"></span>
                             AI is thinking...
                         </div>
                     </div>

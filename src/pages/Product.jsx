@@ -226,7 +226,7 @@ const Product = () => {
                                             <Card data={item} key={i} />
                                         ))
                                     ) : (
-                                        <div className="alert alert-info w-100 text-center" role="alert">
+                                        <div className="alert alert-info w-100 text-center   " role="alert">
                                             No products found matching your filters.
                                         </div>
                                     )}

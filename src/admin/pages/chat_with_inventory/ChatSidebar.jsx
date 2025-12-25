@@ -23,7 +23,7 @@ const ChatSidebar = ({ isSidebarOpen, setIsSidebarOpen, createNewSession, sessio
                 </button>
             </div>
             <div className="p-2">
-                <button className="btn btn-primary btn-sm w-100 mb-2 rounded-pill" onClick={createNewSession}>
+                <button className="btn btn-warning btn-sm w-100 mb-2 rounded-pill" onClick={createNewSession}>
                     <i className="bi bi-plus-lg me-1"></i> New Chat
                 </button>
             </div>

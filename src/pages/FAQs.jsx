@@ -27,14 +27,14 @@ const FAQs = () => {
         <Accordion.Item eventKey="0">
           <Accordion.Header>What is the return policy?</Accordion.Header>
           <Accordion.Body>
-            We offer a <strong>30-day return policy</strong>. If you are not completely satisfied, you can return it within 30 days for a full refund or exchange, provided the item is unused and in original packaging.
+            We offer a <strong>7-day return policy</strong>. If you are not completely satisfied, you can return it within 30 days for a full refund or exchange, provided the item is unused and in original packaging.
           </Accordion.Body>
         </Accordion.Item>
 
         <Accordion.Item eventKey="1">
           <Accordion.Header>Can I return my bag within 7 days?</Accordion.Header>
           <Accordion.Body>
-            Yes, absolutely! Since our policy covers up to 30 days, a return within 7 days is perfectly acceptable and will be processed immediately.
+            Yes, absolutely! Since our policy covers up to 7 days, a return within 7 days is perfectly acceptable and will be processed immediately.
           </Accordion.Body>
         </Accordion.Item>
 

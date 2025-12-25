@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Line } from 'react-chartjs-2';
+import Dropdown from 'react-bootstrap/Dropdown';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -28,6 +29,14 @@ const SalesChart = () => {
     labels: [],
     datasets: []
   });
+
+  const rangeLabels = {
+    today: 'Today',
+    week: 'This Week',
+    month: 'This Month',
+    year: 'This Year',
+    lifetime: 'Lifetime'
+  };
 
   useEffect(() => {
     // Simulated data fetching based on timeRange
@@ -217,20 +226,33 @@ const SalesChart = () => {
 
   return (
     <div className="card shadow mb-4">
+        <style>
+            {`
+                .custom-chart-dropdown .dropdown-item:hover {
+                    background-color: #ffc107 !important;
+                    color: black !important;
+                }
+                .custom-chart-dropdown .dropdown-toggle::after {
+                    margin-left: 10px;
+                }
+            `}
+        </style>
         <div className="card-header py-3 d-flex flex-row align-items-center justify-content-between">
             <h6 className="m-0 font-weight-bold text-secondary">Sales Overview</h6>
-            <select 
-                className="form-select form-select-sm" 
-                style={{width: 'auto'}}
-                value={timeRange}
-                onChange={(e) => setTimeRange(e.target.value)}
-            >
-                <option value="today">Today</option>
-                <option value="week">This Week</option>
-                <option value="month">This Month</option>
-                <option value="year">This Year</option>
-                <option value="lifetime">Lifetime</option>
-            </select>
+            
+            <Dropdown onSelect={(val) => setTimeRange(val)} className="custom-chart-dropdown">
+                <Dropdown.Toggle variant="white" className="btn-sm border text-dark shadow-none d-flex align-items-center">
+                    {rangeLabels[timeRange]}
+                </Dropdown.Toggle>
+
+                <Dropdown.Menu className="shadow-sm border-0">
+                    {Object.keys(rangeLabels).map((key) => (
+                        <Dropdown.Item key={key} eventKey={key}>
+                            {rangeLabels[key]}
+                        </Dropdown.Item>
+                    ))}
+                </Dropdown.Menu>
+            </Dropdown>
         </div>
         <div className="card-body">
             <div className="chart-area">

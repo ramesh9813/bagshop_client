@@ -80,10 +80,11 @@ const Header = () => {
     try {
       await axios.get(`${import.meta.env.VITE_API_BASE_URL}/logout`, { withCredentials: true })
       localStorage.removeItem('user')
+      localStorage.removeItem('cart') // Clear cart from storage
       dispatch({ type: 'LOGOUT' })
-      toast.success("Logged out successfully")
-      navigate('/')
-    } catch (error) {
+      dispatch({ type: 'SET_CART_COUNT', payload: 0 }) // Reset cart count in Redux
+      toast.error("Logged out successfully")
+      navigate('/')    } catch (error) {
       console.error(error)
     }
   }
@@ -106,7 +107,7 @@ const Header = () => {
     <div className="container" style={{"height":"5rem"}}>
       <div className="d-flex align-items-center justify-content-between h-100">
         <Link to="/" className="d-flex align-items-center mb-0 text-dark text-decoration-none">
-        <h4 className="mb-0"><i className="bi bi-backpack4 me-2"></i></h4>
+        <h4 className="mb-0"><i className="bi bi-backpack4 me-2 text-warning"></i></h4>
         </Link>
     
         <div className="d-flex align-items-center">

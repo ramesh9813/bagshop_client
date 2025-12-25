@@ -10,6 +10,8 @@ import Spinner from '../component/Spinner';
 const Register = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     if (loading) {
         return <Spinner />;
@@ -43,7 +45,11 @@ const Register = () => {
 
         password:Yup.string()
         .required('Password is required')
-        .min(8, 'Password must be at least 8 characters'),
+        .min(8, 'Password must be at least 8 characters')
+        .matches(
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+            "Password must contain at least one uppercase, one lowercase, one number and one special character"
+        ),
         
         cpassword:Yup.string()
         .required('Password conformation is mandatory')
@@ -109,7 +115,12 @@ const Register = () => {
                             
                             <div className="mb-3">
                                 <label htmlFor="password"> Password</label>
-                                <Field type="password" name="password" id="password" className="form-control"></Field>
+                                <div className="input-group">
+                                    <Field type={showPassword ? "text" : "password"} name="password" id="password" className="form-control" />
+                                    <span className="input-group-text" onClick={() => setShowPassword(!showPassword)} style={{cursor: 'pointer'}}>
+                                        <i className={`bi ${showPassword ? 'bi-eye-slash' : 'bi-eye'}`}></i>
+                                    </span>
+                                </div>
                                 <ErrorMessage name="password">
                                         {msg=><div style={{color:'red', fontSize: '0.8rem'}}>{msg}</div>}
                                 </ErrorMessage>
@@ -117,7 +128,12 @@ const Register = () => {
                             
                             <div className="mb-3">
                                 <label htmlFor="cpassword">Confirm Password</label>
-                                <Field type="password" name="cpassword" id="cpassword" className="form-control"></Field>
+                                <div className="input-group">
+                                    <Field type={showConfirmPassword ? "text" : "password"} name="cpassword" id="cpassword" className="form-control" />
+                                    <span className="input-group-text" onClick={() => setShowConfirmPassword(!showConfirmPassword)} style={{cursor: 'pointer'}}>
+                                        <i className={`bi ${showConfirmPassword ? 'bi-eye-slash' : 'bi-eye'}`}></i>
+                                    </span>
+                                </div>
                                 <ErrorMessage name="cpassword">
                                         {msg=><div style={{color:'red', fontSize: '0.8rem'}}>{msg}</div>}
                                 </ErrorMessage>

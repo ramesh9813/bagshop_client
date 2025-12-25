@@ -8,6 +8,7 @@ import { useDispatch } from 'react-redux'
 const Login = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
@@ -28,12 +29,10 @@ const Login = () => {
       )
 
       if (data.success) {
-        toast.success("Login Successful!")
         localStorage.setItem('user', JSON.stringify(data.user))
         dispatch({ type: 'LOGIN_SUCCESS', payload: data.user })
-        setTimeout(() => {
-            navigate('/')
-        }, 1500)
+        navigate('/')
+        toast.success("Login Successful!")
       }
 
     } catch (error) {
@@ -43,7 +42,6 @@ const Login = () => {
 
   return (
     <>
-    <ToastContainer theme='colored' position='top-center'/>
     <div className="container login">
         <div className="card shadow-sm p-4 mt-5 border-0">
             <form onSubmit={handleSubmit}>
@@ -61,9 +59,9 @@ const Login = () => {
             />
             <label htmlFor="floatingInput">Email address</label>
             </div>
-            <div className="form-floating">
+            <div className="form-floating position-relative">
             <input 
-                type="password" 
+                type={showPassword ? "text" : "password"}
                 className="form-control" 
                 id="floatingPassword" 
                 placeholder="Password" 
@@ -72,6 +70,13 @@ const Login = () => {
                 required
             />
             <label htmlFor="floatingPassword">Password</label>
+            <span 
+                onClick={() => setShowPassword(!showPassword)}
+                className="position-absolute top-50 end-0 translate-middle-y me-3"
+                style={{ cursor: 'pointer', zIndex: 10 }}
+            >
+                <i className={`bi ${showPassword ? 'bi-eye-slash' : 'bi-eye'}`}></i>
+            </span>
             </div>
 
             <div className="form-check text-start my-3">

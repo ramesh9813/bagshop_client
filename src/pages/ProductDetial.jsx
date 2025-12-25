@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from 'react'
-import { useParams, Link } from 'react-router-dom'
-import axios from 'axios'
-import { toast } from 'react-toastify'
-import Accordion from 'react-bootstrap/Accordion'
-import Spinner from '../component/Spinner'
-import { useSelector } from 'react-redux'
+import React, { useState,useEffect } from 'react'
+import {useParams} from 'react-router-dom'
+import axios  from 'axios'
+import { toast } from 'react-toastify';
+import Accordion from 'react-bootstrap/Accordion';
+import Spinner from '../component/Spinner';
+import Card from '../component/Card';
+import { useSelector } from 'react-redux';
 
 const ProductDetial = () => {
   const [product,setProduct]=useState({})
+  const [similarProducts, setSimilarProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [rating, setRating] = useState(5)
   const [comment, setComment] = useState("")
-  const [hasPurchased, setHasPurchased] = useState(false)
-  const [showInquiryBtn, setShowInquiryBtn] = useState(false)
   const { user } = useSelector(state => state.auth)
   const params =useParams()
   const id= params.productId
@@ -21,6 +21,7 @@ const ProductDetial = () => {
       axios.get(`${import.meta.env.VITE_API_BASE_URL}/product/${id}`)
       .then(res=>{
         setProduct(res.data.product)
+        fetchSimilarProducts(res.data.product)
         setLoading(false)
       })
       .catch(error=>{
@@ -29,26 +30,25 @@ const ProductDetial = () => {
       })
     }
 
-    const checkPurchaseStatus = async () => {
-      if (user) {
-        try {
-          const { data } = await axios.get(
-            `${import.meta.env.VITE_API_BASE_URL}/order/check-purchase/${id}`,
-            { withCredentials: true }
+    const fetchSimilarProducts = (currentProduct) => {
+      axios.get(`${import.meta.env.VITE_API_BASE_URL}/products`)
+      .then(res => {
+        if (res.data.success) {
+          const filtered = res.data.products.filter(p => 
+            p._id !== currentProduct._id && 
+            p.category === currentProduct.category && 
+            p.price >= currentProduct.price - 100 && 
+            p.price <= currentProduct.price + 100
           );
-          if (data.success) {
-            setHasPurchased(data.hasPurchased);
-          }
-        } catch (error) {
-          console.error("Failed to check purchase status", error);
+          setSimilarProducts(filtered.slice(0, 4));
         }
-      }
+      })
+      .catch(err => console.error("Failed to fetch similar products", err));
     }
 
     useEffect(()=>{
      fetchProduct();
-     checkPurchaseStatus();
-  },[id, user])
+  },[id])
 
   const addToCart = async () => {
     // Optimistic UI Update
@@ -62,15 +62,8 @@ const ProductDetial = () => {
         const existingItemIndex = localCart.findIndex(item => item.product._id === product._id);
 
         if (existingItemIndex !== -1) {
-             // Item exists: Check stock before incrementing
+             // Item exists: Increment quantity and use PUT /cart/update
              const newQuantity = localCart[existingItemIndex].quantity + 1;
-
-             if (newQuantity > product.stock) {
-                toast.warning(`No more items remaining in stock. Max available: ${product.stock}`);
-                setShowInquiryBtn(true);
-                return;
-             }
-
              localCart[existingItemIndex].quantity = newQuantity;
              localStorage.setItem('cart', JSON.stringify(localCart));
              toast.success("Item quantity updated");
@@ -86,13 +79,7 @@ const ProductDetial = () => {
                 config
             );
         } else {
-             // Item is new: Check if in stock
-            if (product.stock < 1) {
-                toast.error("Sorry, this item is out of stock.");
-                setShowInquiryBtn(true);
-                return;
-            }
-
+             // Item is new: Add to cart and use POST /cart/add
             localCart.push(optimisticItem);
             localStorage.setItem('cart', JSON.stringify(localCart));
             toast.success("Item added to cart");
@@ -128,37 +115,9 @@ const ProductDetial = () => {
             withCredentials: true
         }
 
-        const reviewData = { 
-            comment, 
-            productId: id 
-        };
-        
-        // Only include rating if user has purchased
-        if (hasPurchased) {
-            reviewData.rating = rating;
-        } else {
-            // If backend requires a rating, send 0 or a flag, 
-            // but ideally backend should handle this.
-            // For now, let's assume we send existing rating logic but UI restricts it.
-            // However, the prompt says "allow only comment". 
-            // If the backend model requires rating, we might need to adjust backend or send a placeholder.
-            // Checking Product Model: It likely expects a rating. 
-            // We will send the rating '0' or not send it if the backend supports it.
-            // Based on typical MERN tutorials, rating is required. 
-            // Let's modify the backend logic slightly in next step if needed, 
-            // but for now, we will send the selected rating (default 5) BUT visually hide it?
-            // "allow only comment" implies they CANNOT rate.
-            // If they cannot rate, the rating shouldn't affect the average.
-            
-            // To be safe and compliant with the request:
-            // We will send rating: 0 to indicate "no rating".
-            // Backend needs to handle rating: 0 to NOT count it in average.
-             reviewData.rating = 0; 
-        }
-
         const { data } = await axios.put(
             `${import.meta.env.VITE_API_BASE_URL}/review`,
-            reviewData,
+            { rating, comment, productId: id },
             config
         )
 
@@ -253,24 +212,24 @@ const ProductDetial = () => {
               >
                 <i className="bi bi-cart-plus me-2"></i> {product.stock > 0 ? "ADD TO CART" : "OUT OF STOCK"}
               </button>
-
-              {showInquiryBtn && (
-                <div className="mt-3">
-                  <Link 
-                    to="/contact" 
-                    state={{ 
-                      subject: 'More item needed', 
-                      productName: product.name 
-                    }} 
-                    className="btn btn-outline-secondary w-100 bg-light text-dark"
-                  >
-                    <i className="bi bi-envelope-plus me-2"></i> Request More Stock for this Item
-                  </Link>
-                </div>
-              )}
             </div>
           </div>
         </div>
+
+        {/* Similar Products Section */}
+        {similarProducts.length > 0 && (
+          <div className="row mt-5">
+            <div className="col-12">
+              <hr className="my-5"/>
+              <h3 className="mb-4 fw-bold">Similar Products</h3>
+              <div className="row row-cols-1 row-cols-md-4 g-4">
+                {similarProducts.map((p, i) => (
+                  <Card data={p} key={i} />
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="row mt-5">
           <div className="col-12">
@@ -283,30 +242,22 @@ const ProductDetial = () => {
                 <div className="card mb-4 shadow-sm">
                     <div className="card-body">
                         <h5 className="card-title">Write a Review</h5>
-                        {!hasPurchased && (
-                            <div className="alert alert-info py-2 small">
-                                <i className="bi bi-info-circle me-1"></i>
-                                You can comment on this product, but verified purchase is required to leave a star rating.
-                            </div>
-                        )}
                         <div className="row">
-                            {hasPurchased && (
-                                <div className="col-md-3 mb-3">
-                                    <label className="form-label">Rating</label>
-                                    <select 
-                                        className="form-select " 
-                                        value={rating} 
-                                        onChange={(e) => setRating(e.target.value)}
-                                    >
-                                        <option value="5" className="bg-success">5 - Excellent</option>
-                                        <option value="4" className="bg-success">4 - Very Good</option>
-                                        <option value="3" className="bg-success">3 - Good</option>
-                                        <option value="2" className="bg-success">2 - Fair</option>
-                                        <option value="1" className="bg-success">1 - Poor</option>
-                                    </select>
-                                </div>
-                            )}
-                            <div className={hasPurchased ? "col-md-9 mb-3" : "col-md-12 mb-3"}>
+                            <div className="col-md-3 mb-3">
+                                <label className="form-label">Rating</label>
+                                <select 
+                                    className="form-select " 
+                                    value={rating} 
+                                    onChange={(e) => setRating(e.target.value)}
+                                >
+                                    <option value="5">5 - Excellent</option>
+                                    <option value="4">4 - Very Good</option>
+                                    <option value="3">3 - Good</option>
+                                    <option value="2">2 - Fair</option>
+                                    <option value="1">1 - Poor</option>
+                                </select>
+                            </div>
+                            <div className="col-md-9 mb-3">
                                 <label className="form-label">Comment</label>
                                 <textarea 
                                     className="form-control" 

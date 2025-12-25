@@ -29,11 +29,11 @@ const MyOrders = () => {
     }, [])
 
     return (
-        <div className="container mt-5">
-            <h2 className="mb-4">My Orders</h2>
+        <div className="container mt-5 mb-5">
+            <h2 className="text-center mb-4">My Orders</h2>
             {loading ? (
                 <div className="text-center py-5">
-                    <div className="spinner-border text-primary" role="status">
+                    <div className="spinner-border text-warning" role="status">
                         <span className="visually-hidden">Loading...</span>
                     </div>
                 </div>
@@ -75,7 +75,7 @@ const MyOrders = () => {
                                                 </span>
                                             </td>
                                             <td>
-                                                <Link to={`/order/${order._id}`} className="btn btn-sm btn-outline-dark">
+                                                <Link to={`/order/${order._id}`} className="btn btn-sm btn-outline-warning">
                                                     View Details
                                                 </Link>
                                             </td>

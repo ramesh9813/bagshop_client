@@ -29,8 +29,45 @@ const OrderDetails = () => {
         fetchOrderDetails()
     }, [id])
 
-    if (loading) return <div className="text-center py-5"><div className="spinner-border text-primary" /></div>
+    if (loading) return <div className="text-center py-5"><div className="spinner-border text-warning" /></div>
     if (!order) return <div className="text-center py-5">Order not found</div>
+
+    const submitEsewaForm = (actionUrl, formData) => {
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = actionUrl;
+
+        Object.keys(formData).forEach((key) => {
+            const input = document.createElement("input");
+            input.type = "hidden";
+            input.name = key;
+            input.value = formData[key];
+            form.appendChild(input);
+        });
+
+        document.body.appendChild(form);
+        form.submit();
+    };
+
+    const handlePaymentRetry = async () => {
+        try {
+            const config = {
+                headers: { 'Content-Type': 'application/json' },
+                withCredentials: true
+            };
+            const { data } = await axios.post(
+                `${import.meta.env.VITE_API_BASE_URL}/payment/initiate`,
+                { orderId: order._id },
+                config
+            );
+
+            if (data.success) {
+                submitEsewaForm(data.payment_url, data.formData);
+            }
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to initiate payment");
+        }
+    };
 
     return (
         <div className="container mt-5 mb-5">
@@ -55,12 +92,26 @@ const OrderDetails = () => {
                     <div className="card shadow mb-4">
                         <div className="card-header bg-light text-dark fw-bold">Payment</div>
                         <div className="card-body">
-                            <p>
-                                <span className={order.paymentInfo && order.paymentInfo.status === "succeeded" ? "text-success fw-bold" : "text-danger fw-bold"}>
-                                    {order.paymentInfo && order.paymentInfo.status === "succeeded" ? "PAID" : "NOT PAID"}
+                            <p><strong>Status: </strong>
+                                <span className={order.paymentInfo && order.paymentInfo.status.toLowerCase() === "succeeded" ? "text-success fw-bold" : "text-danger fw-bold"}>
+                                    {order.paymentInfo && order.paymentInfo.status.toLowerCase() === "succeeded" ? "PAID" : "NOT PAID"}
                                 </span>
                             </p>
+                            <p><strong>Method:</strong> {order.paymentInfo && order.paymentInfo.method}</p>
                             <p><strong>Amount:</strong> NRS {order.totalPrice}</p>
+                            
+                            {/* Retry Payment Button */}
+                            {order.paymentInfo && 
+                             order.paymentInfo.status.toLowerCase() !== "succeeded" && 
+                             order.paymentInfo.method === "eSewa" && (
+                                <button 
+                                    className="btn btn-success mt-3"
+                                    onClick={handlePaymentRetry}
+                                >
+                                    <i className="bi bi-wallet2 me-2"></i> 
+                                    Pay with eSewa
+                                </button>
+                            )}
                         </div>
                     </div>
 

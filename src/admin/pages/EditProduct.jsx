@@ -61,7 +61,7 @@ const EditProduct = () => {
         }
     }
 
-    if (loading) return <div className="text-center py-5"><div className="spinner-border text-primary" /></div>
+    if (loading) return <div className="text-center py-5"><div className="spinner-border text-warning" /></div>
 
     if (!product) return <div className="text-center py-5">Product not found</div>
 
@@ -134,10 +134,10 @@ const EditProduct = () => {
                                     <ErrorMessage name="imageUrl" component="div" className="text-danger small" />
                                 </div>
 
-                                <button type="submit" className="btn btn-dark" disabled={isSubmitting}>
+                                <button type="submit" className="btn btn-warning" disabled={isSubmitting}>
                                     {isSubmitting ? 'Updating...' : 'Update Product'}
                                 </button>
-                                <button type="button" className="btn btn-secondary ms-2" onClick={() => navigate('/admin/products')}>Cancel</button>
+                                <button type="button" className="btn btn-warning ms-2" onClick={() => navigate('/admin/products')}>Cancel</button>
                             </Form>
                         )}
                     </Formik>

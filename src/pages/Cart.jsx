@@ -10,7 +10,7 @@ const Cart = () => {
     const[cartItems, setCartItems]=useState([])
     const dispatch = useDispatch()
 
-    const [useDefaultAddress, setUseDefaultAddress] = useState(false);
+    const [useDefaultAddress, setUseDefaultAddress] = useState(true);
 
     const updateCartCount = (items) => {
         const count = items.length;
@@ -106,7 +106,7 @@ const Cart = () => {
         setCartItems(updatedItems);
         updateCartCount(updatedItems);
         localStorage.setItem('cart', JSON.stringify(updatedItems));
-        toast.success("Item removed");
+        toast.error("Item removed");
 
         try {
             await axios.delete(
@@ -129,7 +129,12 @@ const Cart = () => {
                 <div className="row d-flex justify-content-around my-3">
                     {cartItems.length===0 ?
                         
-                            <h2 className='text-success text-center '>Your Cart is Empty</h2>
+                            <div className="text-center py-5">
+                                <h2 className='text-success mb-4'>Your Cart is Empty</h2>
+                                <Link to="/products" className="text-warning fw-bold fs-5 text-decoration-none border border-warning p-2 px-4 rounded-pill hover-bg-warning">
+                                    <i className="bi bi-arrow-left me-2"></i>Continue Shopping
+                                </Link>
+                            </div>
                         :(
                             <>
                                 <h2 className='text-center'>Your Cart items</h2>

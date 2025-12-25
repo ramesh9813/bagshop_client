@@ -67,7 +67,7 @@ const Users = () => {
     <div>
         {loading ? (
              <div className="text-center py-5">
-                <div className="spinner-border text-primary" role="status">
+                <div className="spinner-border text-warning" role="status">
                     <span className="visually-hidden">Loading...</span>
                 </div>
             </div>
@@ -100,7 +100,7 @@ const Users = () => {
                                 <td>
                                     {currentUser.role === 'owner' && user.role !== 'owner' && (
                                         <button 
-                                            className="btn btn-sm btn-outline-primary"
+                                            className="btn btn-sm btn-outline-warning"
                                             onClick={() => handleRoleUpdate(user._id, user.role)}
                                             title="Change Role"
                                         >

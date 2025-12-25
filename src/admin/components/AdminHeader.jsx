@@ -26,8 +26,10 @@ const AdminHeader = () => {
         try {
           await axios.get(`${import.meta.env.VITE_API_BASE_URL}/logout`, { withCredentials: true })
           localStorage.removeItem('user')
+          localStorage.removeItem('cart') // Clear cart
           dispatch({ type: 'LOGOUT' })
-          toast.success("Logged out successfully")
+          dispatch({ type: 'SET_CART_COUNT', payload: 0 }) // Reset count
+          toast.error("Logged out successfully")
           navigate('/')
         } catch (error) {
           console.error(error)

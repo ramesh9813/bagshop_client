@@ -97,7 +97,7 @@ const ProductList = () => {
     <div>
         <div className="d-flex justify-content-end flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
             <div className="btn-toolbar mb-2 mb-md-0">
-                <Link to="/admin/product/add" className="btn btn-sm btn-outline-primary">
+                <Link to="/admin/product/add" className="btn btn-sm btn-warning">
                     <i className="bi bi-plus-lg me-1"></i>
                     Add New Product
                 </Link>
@@ -106,7 +106,7 @@ const ProductList = () => {
         
         {loading ? (
             <div className="text-center py-5">
-                <div className="spinner-border text-primary" role="status">
+                <div className="spinner-border text-warning" role="status">
                     <span className="visually-hidden">Loading...</span>
                 </div>
             </div>
@@ -159,7 +159,7 @@ const ProductList = () => {
                                     <Link to={`/productdetails/${product._id}`} className="btn btn-sm btn-outline-secondary" title="View">
                                         <i className="bi bi-eye"></i>
                                     </Link>
-                                    <Link to={`/admin/product/edit/${product._id}`} className="btn btn-sm btn-outline-primary" title="Edit">
+                                    <Link to={`/admin/product/edit/${product._id}`} className="btn btn-sm btn-outline-warning" title="Edit">
                                         <i className="bi bi-pencil"></i>
                                     </Link>
                                     <button 

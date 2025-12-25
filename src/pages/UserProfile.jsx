@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import 'react-toastify/dist/ReactToastify.css';
 
 const UserProfile = () => {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const [user, setUser] = useState({});
     
     // Profile State
@@ -76,6 +78,14 @@ const UserProfile = () => {
 
     const handleUpdatePassword = async (e) => {
         e.preventDefault();
+
+        // Password Strength Validation
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        if (!passwordRegex.test(newPassword)) {
+            toast.error("Password must be at least 8 chars long and contain uppercase, lowercase, number & special char");
+            return;
+        }
+
         try {
             const config = { headers: { "Content-Type": "application/json" }, withCredentials: true };
             const { data } = await axios.put(
@@ -99,7 +109,8 @@ const UserProfile = () => {
         try {
           await axios.get(`${import.meta.env.VITE_API_BASE_URL}/logout`, { withCredentials: true })
           localStorage.removeItem('user')
-          toast.success("Logged out successfully")
+          dispatch({ type: 'LOGOUT' })
+          toast.error("Logged out successfully")
           navigate('/login')
         } catch (error) {
           console.error(error)

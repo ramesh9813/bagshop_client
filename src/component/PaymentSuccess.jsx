@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
+import { useDispatch } from 'react-redux';
 
 const PaymentSuccess = () => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const [status, setStatus] = useState("Verifying...");
     const [error, setError] = useState(null);
 
@@ -25,6 +27,10 @@ const PaymentSuccess = () => {
                 );
 
                 if (data.success) {
+                    // Clear Cart from Local Storage and Redux
+                    localStorage.removeItem('cart');
+                    dispatch({ type: 'SET_CART_COUNT', payload: 0 });
+
                     setStatus("Success");
                 } else {
                     setStatus("Failed");
@@ -44,7 +50,7 @@ const PaymentSuccess = () => {
             <div className="card p-5 shadow">
                 {status === "Verifying..." && (
                     <>
-                        <div className="spinner-border text-primary" role="status">
+                        <div className="spinner-border text-warning" role="status">
                             <span className="visually-hidden">Loading...</span>
                         </div>
                         <h3 className="mt-3">Verifying Payment...</h3>

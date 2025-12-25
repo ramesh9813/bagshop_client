@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { toast } from 'react-toastify'
+import Dropdown from 'react-bootstrap/Dropdown'
 import { useSortableData } from '../../hooks/useSortableData'
 
 const OrderList = () => {
     const [orders, setOrders] = useState([])
     const [loading, setLoading] = useState(true)
     const { items: sortedOrders, requestSort, sortConfig } = useSortableData(orders);
+
+    const statusOptions = ['Processing', 'Shipped', 'Delivered'];
 
     const fetchOrders = async () => {
         try {
@@ -70,9 +73,20 @@ const OrderList = () => {
 
   return (
     <div>
+        <style>
+            {`
+                .custom-order-dropdown .dropdown-item:hover {
+                    background-color: #ffc107 !important;
+                    color: black !important;
+                }
+                .custom-order-dropdown .dropdown-toggle::after {
+                    margin-left: 10px;
+                }
+            `}
+        </style>
         {loading ? (
             <div className="text-center py-5">
-                <div className="spinner-border text-primary" role="status">
+                <div className="spinner-border text-warning" role="status">
                     <span className="visually-hidden">Loading...</span>
                 </div>
             </div>
@@ -106,17 +120,21 @@ const OrderList = () => {
                                     </span>
                                 </td>
                                 <td>
-                                    <div className="btn-group">
-                                        <select 
-                                            className="form-select form-select-sm me-2" 
-                                            value={order.orderStatus}
-                                            onChange={(e) => updateStatus(order._id, e.target.value)}
-                                            style={{width: 'auto'}}
-                                        >
-                                            <option value="Processing">Processing</option>
-                                            <option value="Shipped">Shipped</option>
-                                            <option value="Delivered">Delivered</option>
-                                        </select>
+                                    <div className="btn-group align-items-center">
+                                        <Dropdown onSelect={(val) => updateStatus(order._id, val)} className="custom-order-dropdown me-2">
+                                            <Dropdown.Toggle variant="white" className="btn-sm border text-dark shadow-none d-flex align-items-center">
+                                                {order.orderStatus}
+                                            </Dropdown.Toggle>
+
+                                            <Dropdown.Menu className="shadow-sm border-0">
+                                                {statusOptions.map((status) => (
+                                                    <Dropdown.Item key={status} eventKey={status}>
+                                                        {status}
+                                                    </Dropdown.Item>
+                                                ))}
+                                            </Dropdown.Menu>
+                                        </Dropdown>
+                                        
                                         <button 
                                             className="btn btn-sm btn-outline-danger"
                                             onClick={() => deleteOrder(order._id)}

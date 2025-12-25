@@ -39,7 +39,7 @@ const Dashboard = () => {
     <div>
         {loading ? (
             <div className="text-center py-5">
-                <div className="spinner-border text-primary" role="status">
+                <div className="spinner-border text-warning" role="status">
                     <span className="visually-hidden">Loading...</span>
                 </div>
             </div>
@@ -50,7 +50,7 @@ const Dashboard = () => {
                     <div className="card h-100 text-dark bg-light shadow-sm border-0">
                         <div className="card-header bg-transparent border-0 d-flex justify-content-between align-items-center pb-0">
                             <span className="text-uppercase small fw-bold text-muted">Total Sales</span>
-                            <i className="bi bi-cash-stack fs-4 text-dark"></i>
+                            <i className="bi bi-cash-stack fs-4 text-warning"></i>
                         </div>
                         <div className="card-body pt-0">
                             <h3 className="card-title fw-bold">NRS {stats.totalSales.toLocaleString()}</h3>
@@ -62,7 +62,7 @@ const Dashboard = () => {
                     <div className="card h-100 text-dark bg-light shadow-sm border-0">
                         <div className="card-header bg-transparent border-0 d-flex justify-content-between align-items-center pb-0">
                             <span className="text-uppercase small fw-bold text-muted">Total Orders</span>
-                            <i className="bi bi-bag-check fs-4 text-dark"></i>
+                            <i className="bi bi-bag-check fs-4 text-warning"></i>
                         </div>
                         <div className="card-body pt-0">
                             <h3 className="card-title fw-bold">{stats.ordersCount}</h3>
@@ -74,7 +74,7 @@ const Dashboard = () => {
                     <div className="card h-100 text-dark bg-light shadow-sm border-0">
                         <div className="card-header bg-transparent border-0 d-flex justify-content-between align-items-center pb-0">
                             <span className="text-uppercase small fw-bold text-muted">Products</span>
-                            <i className="bi bi-box-seam fs-4 text-dark"></i>
+                            <i className="bi bi-box-seam fs-4 text-warning"></i>
                         </div>
                         <div className="card-body pt-0">
                             <h3 className="card-title fw-bold">{stats.productsCount}</h3>
@@ -86,7 +86,7 @@ const Dashboard = () => {
                     <div className="card h-100 text-dark bg-light shadow-sm border-0">
                         <div className="card-header bg-transparent border-0 d-flex justify-content-between align-items-center pb-0">
                             <span className="text-uppercase small fw-bold text-muted">Users</span>
-                            <i className="bi bi-people fs-4 text-dark"></i>
+                            <i className="bi bi-people fs-4 text-warning"></i>
                         </div>
                         <div className="card-body pt-0">
                             <h3 className="card-title fw-bold">{stats.usersCount}</h3>
@@ -98,7 +98,7 @@ const Dashboard = () => {
                     <div className="card h-100 text-dark bg-light shadow-sm border-0">
                         <div className="card-header bg-transparent border-0 d-flex justify-content-between align-items-center pb-0">
                             <span className="text-uppercase small fw-bold text-muted">Critical Items</span>
-                            <i className="bi bi-exclamation-triangle-fill fs-4 text-dark"></i>
+                            <i className="bi bi-exclamation-triangle-fill fs-4 text-warning"></i>
                         </div>
                         <div className="card-body pt-0">
                             <h3 className="card-title fw-bold text-dark">{stats.criticalItemsCount}</h3>
@@ -106,7 +106,6 @@ const Dashboard = () => {
                         </div>
                     </div>
                 </div>
-            </div>
             </div>
 
             <div className="row mt-4">
