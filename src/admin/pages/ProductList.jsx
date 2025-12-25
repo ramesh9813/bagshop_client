@@ -2,10 +2,12 @@ import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
 import { toast } from 'react-toastify'
+import { useSortableData } from '../../hooks/useSortableData'
 
 const ProductList = () => {
     const [products, setProducts] = useState([])
     const [loading, setLoading] = useState(true)
+    const { items: sortedProducts, requestSort, sortConfig } = useSortableData(products);
 
     useEffect(() => {
         fetchProducts()
@@ -77,6 +79,20 @@ const ProductList = () => {
         return text
     }
 
+    const getClassNamesFor = (name) => {
+        if (!sortConfig) {
+            return;
+        }
+        return sortConfig.key === name ? sortConfig.direction : undefined;
+    };
+
+    const SortIcon = ({ name }) => {
+        if (sortConfig?.key === name) {
+            return sortConfig.direction === 'ascending' ? <i className="bi bi-caret-up-fill ms-1"></i> : <i className="bi bi-caret-down-fill ms-1"></i>;
+        }
+        return <i className="bi bi-caret-up ms-1 text-muted opacity-25"></i>; // Default/Inactive icon
+    };
+
   return (
     <div>
         <div className="d-flex justify-content-end flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
@@ -99,17 +115,17 @@ const ProductList = () => {
                 <table className="table table-striped table-hover align-middle">
                 <thead className="table-light">
                     <tr>
-                    <th scope="col">ID</th>
-                    <th scope="col">Name</th>
+                    <th scope="col" onClick={() => requestSort('_id')} style={{cursor: 'pointer'}}>ID <SortIcon name="_id"/></th>
+                    <th scope="col" onClick={() => requestSort('name')} style={{cursor: 'pointer'}}>Name <SortIcon name="name"/></th>
                     <th scope="col">Description</th>
-                    <th scope="col">Stock</th>
-                    <th scope="col">Price</th>
-                    <th scope="col">Rating</th>
+                    <th scope="col" onClick={() => requestSort('stock')} style={{cursor: 'pointer'}}>Stock <SortIcon name="stock"/></th>
+                    <th scope="col" onClick={() => requestSort('price')} style={{cursor: 'pointer'}}>Price <SortIcon name="price"/></th>
+                    <th scope="col" onClick={() => requestSort('ratings')} style={{cursor: 'pointer'}}>Rating <SortIcon name="ratings"/></th>
                     <th scope="col">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {products && products.map((product) => (
+                    {sortedProducts && sortedProducts.map((product) => (
                         <tr key={product._id}>
                             <td>{product._id.substring(0, 10)}...</td>
                             <td className="fw-bold">{product.name}</td>

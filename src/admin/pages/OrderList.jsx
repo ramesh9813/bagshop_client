@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { toast } from 'react-toastify'
+import { useSortableData } from '../../hooks/useSortableData'
 
 const OrderList = () => {
     const [orders, setOrders] = useState([])
     const [loading, setLoading] = useState(true)
+    const { items: sortedOrders, requestSort, sortConfig } = useSortableData(orders);
 
     const fetchOrders = async () => {
         try {
@@ -59,6 +61,13 @@ const OrderList = () => {
         }
     }
 
+    const SortIcon = ({ name }) => {
+        if (sortConfig?.key === name) {
+            return sortConfig.direction === 'ascending' ? <i className="bi bi-caret-up-fill ms-1"></i> : <i className="bi bi-caret-down-fill ms-1"></i>;
+        }
+        return <i className="bi bi-caret-up ms-1 text-muted opacity-25"></i>;
+    };
+
   return (
     <div>
         {loading ? (
@@ -72,15 +81,15 @@ const OrderList = () => {
                 <table className="table table-striped table-hover align-middle">
                     <thead className="table-light">
                         <tr>
-                            <th scope="col">Order ID</th>
-                            <th scope="col">Items Qty</th>
-                            <th scope="col">Amount</th>
-                            <th scope="col">Status</th>
+                            <th scope="col" onClick={() => requestSort('_id')} style={{cursor: 'pointer'}}>Order ID <SortIcon name="_id"/></th>
+                            <th scope="col" onClick={() => requestSort('orderItems.length')} style={{cursor: 'pointer'}}>Items Qty <SortIcon name="orderItems.length"/></th>
+                            <th scope="col" onClick={() => requestSort('totalPrice')} style={{cursor: 'pointer'}}>Amount <SortIcon name="totalPrice"/></th>
+                            <th scope="col" onClick={() => requestSort('orderStatus')} style={{cursor: 'pointer'}}>Status <SortIcon name="orderStatus"/></th>
                             <th scope="col">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {orders && orders.map(order => (
+                        {sortedOrders && sortedOrders.map(order => (
                             <tr key={order._id}>
                                 <td>{order._id}</td>
                                 <td>{order.orderItems.length}</td>

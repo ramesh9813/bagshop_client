@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
-import { Line, Pie, Bar } from 'react-chartjs-2'
+import { Line, Pie } from 'react-chartjs-2'
 import Spinner from '../../component/Spinner'
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -24,39 +25,43 @@ ChartJS.register(
   Tooltip,
   Legend,
   ArcElement,
-  BarElement
+  BarElement,
+  ChartDataLabels
 );
 
 const OwnerAnalytics = () => {
     const [data, setData] = useState(null)
     const [loading, setLoading] = useState(true)
+    const [pieTimeRange, setPieTimeRange] = useState('all')
+
+    const fetchAnalytics = async (range = 'all') => {
+        setLoading(true);
+        try {
+            const { data } = await axios.get(
+                `${import.meta.env.VITE_API_BASE_URL}/admin/analytics?range=${range}`,
+                { withCredentials: true }
+            )
+            if (data.success) {
+                setData(data)
+            }
+        } catch (error) {
+            console.error("Error fetching analytics", error)
+        } finally {
+            setLoading(false)
+        }
+    }
 
     useEffect(() => {
-        const fetchAnalytics = async () => {
-            try {
-                const { data } = await axios.get(
-                    `${import.meta.env.VITE_API_BASE_URL}/admin/analytics`,
-                    { withCredentials: true }
-                )
-                if (data.success) {
-                    setData(data)
-                }
-            } catch (error) {
-                console.error("Error fetching analytics", error)
-            } finally {
-                setLoading(false)
-            }
-        }
-        fetchAnalytics()
-    }, [])
+        fetchAnalytics(pieTimeRange)
+    }, [pieTimeRange])
 
-    if (loading) return <Spinner />
+    if (loading && !data) return <Spinner />
 
     // Prepare Category Data
     const pieData = {
-        labels: data?.categorySales.map(c => c._id),
+        labels: data?.categorySales?.map(c => c._id) || [],
         datasets: [{
-            data: data?.categorySales.map(c => c.totalSales),
+            data: data?.categorySales?.map(c => c.totalSales) || [],
             backgroundColor: ['#ffc107', '#28a745', '#17a2b8', '#dc3545'],
             hoverOffset: 4
         }]
@@ -64,10 +69,12 @@ const OwnerAnalytics = () => {
 
     // Prepare Sales Trend Data (Simple grouping by date from allOrders)
     const salesByDate = {};
-    data?.allOrders.forEach(order => {
-        const date = new Date(order.createdAt).toLocaleDateString();
-        salesByDate[date] = (salesByDate[date] || 0) + order.totalPrice;
-    });
+    if (data?.allOrders) {
+        data.allOrders.forEach(order => {
+            const date = new Date(order.createdAt).toLocaleDateString();
+            salesByDate[date] = (salesByDate[date] || 0) + order.totalPrice;
+        });
+    }
 
     const trendData = {
         labels: Object.keys(salesByDate),
@@ -83,7 +90,6 @@ const OwnerAnalytics = () => {
 
     return (
         <div className="container-fluid">
-            
             <div className="row g-4">
                 {/* Revenue Trend */}
                 <div className="col-md-8">
@@ -91,7 +97,17 @@ const OwnerAnalytics = () => {
                         <div className="card-body">
                             <h5 className="card-title mb-4">Revenue Growth Trend</h5>
                             <div style={{ height: '300px' }}>
-                                <Line data={trendData} options={{ maintainAspectRatio: false }} />
+                                <Line 
+                                    data={trendData} 
+                                    options={{ 
+                                        maintainAspectRatio: false,
+                                        plugins: {
+                                            datalabels: {
+                                                display: false
+                                            }
+                                        }
+                                    }} 
+                                />
                             </div>
                         </div>
                     </div>
@@ -101,9 +117,44 @@ const OwnerAnalytics = () => {
                 <div className="col-md-4">
                     <div className="card shadow-sm border-0 h-100">
                         <div className="card-body">
-                            <h5 className="card-title mb-4">Revenue by Category</h5>
+                            <div className="d-flex justify-content-between align-items-center mb-4">
+                                <h5 className="card-title m-0">Revenue by Category</h5>
+                                <select 
+                                    className="form-select form-select-sm" 
+                                    style={{ width: 'auto' }}
+                                    value={pieTimeRange}
+                                    onChange={(e) => setPieTimeRange(e.target.value)}
+                                >
+                                    <option value="today">Today</option>
+                                    <option value="week">Week</option>
+                                    <option value="month">Month</option>
+                                    <option value="year">Year</option>
+                                    <option value="all">All Time</option>
+                                </select>
+                            </div>
                             <div style={{ height: '300px' }}>
-                                <Pie data={pieData} options={{ maintainAspectRatio: false }} />
+                                <Pie 
+                                    data={pieData} 
+                                    options={{ 
+                                        maintainAspectRatio: false,
+                                        plugins: {
+                                            legend: {
+                                                display: true,
+                                                position: 'bottom'
+                                            },
+                                            datalabels: {
+                                                color: '#fff',
+                                                font: {
+                                                    weight: 'bold',
+                                                    size: 12
+                                                },
+                                                formatter: (value) => `NRS ${value.toLocaleString()}`,
+                                                anchor: 'center',
+                                                align: 'center'
+                                            }
+                                        }
+                                    }} 
+                                />
                             </div>
                         </div>
                     </div>
@@ -125,12 +176,12 @@ const OwnerAnalytics = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {data?.categorySales.map((c, i) => (
+                                        {data?.categorySales?.map((c, i) => (
                                             <tr key={i}>
                                                 <td className="fw-bold">{c._id}</td>
                                                 <td>{c.totalQuantity} units</td>
                                                 <td className="text-success fw-bold">NRS {c.totalSales.toLocaleString()}</td>
-                                                <td>NRS {(c.totalSales / c.totalQuantity).toFixed(2)}</td>
+                                                <td>NRS {(c.totalSales / (c.totalQuantity || 1)).toFixed(2)}</td>
                                             </tr>
                                         ))}
                                     </tbody>

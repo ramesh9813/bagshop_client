@@ -203,6 +203,9 @@ const SalesChart = () => {
         legend: {
             display: true,
             position: 'top'
+        },
+        datalabels: {
+            display: false
         }
     },
     layout: {
@@ -215,7 +218,7 @@ const SalesChart = () => {
   return (
     <div className="card shadow mb-4">
         <div className="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-            <h6 className="m-0 font-weight-bold text-primary">Sales Overview</h6>
+            <h6 className="m-0 font-weight-bold text-secondary">Sales Overview</h6>
             <select 
                 className="form-select form-select-sm" 
                 style={{width: 'auto'}}

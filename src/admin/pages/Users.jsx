@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { useSelector } from 'react-redux'
+import { useSortableData } from '../../hooks/useSortableData'
 
 const Users = () => {
     const [users, setUsers] = useState([])
     const [loading, setLoading] = useState(true)
     const { user: currentUser } = useSelector(state => state.auth)
+    const { items: sortedUsers, requestSort, sortConfig } = useSortableData(users);
 
     const fetchUsers = async () => {
         try {
@@ -54,6 +56,13 @@ const Users = () => {
         }
     }
 
+    const SortIcon = ({ name }) => {
+        if (sortConfig?.key === name) {
+            return sortConfig.direction === 'ascending' ? <i className="bi bi-caret-up-fill ms-1"></i> : <i className="bi bi-caret-down-fill ms-1"></i>;
+        }
+        return <i className="bi bi-caret-up ms-1 text-muted opacity-25"></i>;
+    };
+
   return (
     <div>
         {loading ? (
@@ -67,15 +76,15 @@ const Users = () => {
                 <table className="table table-striped table-hover align-middle">
                     <thead className="table-light">
                         <tr>
-                            <th scope="col">ID</th>
-                            <th scope="col">Name</th>
-                            <th scope="col">Email</th>
-                            <th scope="col">Role</th>
+                            <th scope="col" onClick={() => requestSort('_id')} style={{cursor: 'pointer'}}>ID <SortIcon name="_id"/></th>
+                            <th scope="col" onClick={() => requestSort('name')} style={{cursor: 'pointer'}}>Name <SortIcon name="name"/></th>
+                            <th scope="col" onClick={() => requestSort('email')} style={{cursor: 'pointer'}}>Email <SortIcon name="email"/></th>
+                            <th scope="col" onClick={() => requestSort('role')} style={{cursor: 'pointer'}}>Role <SortIcon name="role"/></th>
                             <th scope="col">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {users && users.map(user => (
+                        {sortedUsers && sortedUsers.map(user => (
                             <tr key={user._id}>
                                 <td>{user._id.substring(0, 10)}...</td>
                                 <td>{user.name}</td>

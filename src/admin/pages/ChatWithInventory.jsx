@@ -270,10 +270,10 @@ const ChatWithInventory = () => {
                 />
 
                 {/* Main Chat Area */}
-                <div className="d-flex flex-column flex-grow-1 h-100 position-relative overflow-hidden">
+                <div className="d-flex flex-column flex-grow-1 h-100 position-relative overflow-hidden" style={{ height: '100%' }}>
                     
                     {/* Minimal Header */}
-                    <div className="d-flex align-items-center justify-content-between px-3 py-2 border-bottom bg-white flex-shrink-0" style={{ minHeight: '50px', zIndex: 10 }}>
+                    <div className="d-flex align-items-center justify-content-between px-3 py-2 border-bottom bg-white flex-shrink-0" style={{ height: '50px', zIndex: 10 }}>
                         <div className="d-flex align-items-center">
                             <button className="btn btn-sm btn-link text-dark p-0 me-3" onClick={() => setIsSidebarOpen(!isSidebarOpen)} title="History">
                                 <i className="bi bi-clock-history fs-5"></i>
@@ -290,15 +290,17 @@ const ChatWithInventory = () => {
                         </div>
                     </div>
 
-                    {/* Chat Messages */}
-                    <ChatMessages 
-                        chatHistory={chatHistory}
-                        loading={loading}
-                        chatEndRef={chatEndRef}
-                    />
+                    {/* Chat Messages Area with padding for the fixed footer */}
+                    <div className="flex-grow-1 overflow-auto bg-white" style={{ marginBottom: '85px' }}>
+                        <ChatMessages 
+                            chatHistory={chatHistory}
+                            loading={loading}
+                            chatEndRef={chatEndRef}
+                        />
+                    </div>
 
-                    {/* Input Area */}
-                    <div className="flex-shrink-0  bg-white mt-auto">
+                    {/* Input Area - Fixed at bottom of Main Chat Area */}
+                    <div className="fixed bottom-0 left-0 w-full z-50 bg-white border-t p-4" style={{ zIndex: 20 }}>
                         <ChatInput 
                             handleSend={handleSend}
                             question={question}

@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
+import { useSortableData } from '../../hooks/useSortableData'
 
 const InquiryList = () => {
     const [inquiries, setInquiries] = useState([])
     const [loading, setLoading] = useState(true)
     const navigate = useNavigate()
+    const { items: sortedInquiries, requestSort, sortConfig } = useSortableData(inquiries);
 
     const fetchInquiries = async () => {
         try {
@@ -29,6 +31,13 @@ const InquiryList = () => {
         fetchInquiries()
     }, [])
 
+    const SortIcon = ({ name }) => {
+        if (sortConfig?.key === name) {
+            return sortConfig.direction === 'ascending' ? <i className="bi bi-caret-up-fill ms-1"></i> : <i className="bi bi-caret-down-fill ms-1"></i>;
+        }
+        return <i className="bi bi-caret-up ms-1 text-muted opacity-25"></i>;
+    };
+
   return (
     <div>
         {loading ? (
@@ -42,17 +51,17 @@ const InquiryList = () => {
                 <table className="table table-striped table-hover align-middle">
                     <thead className="table-light">
                         <tr>
-                            <th scope="col">Date</th>
-                            <th scope="col">Name</th>
-                            <th scope="col">Email</th>
-                            <th scope="col">Product</th>
-                            <th scope="col">Subject</th>
+                            <th scope="col" onClick={() => requestSort('createdAt')} style={{cursor: 'pointer'}}>Date <SortIcon name="createdAt"/></th>
+                            <th scope="col" onClick={() => requestSort('name')} style={{cursor: 'pointer'}}>Name <SortIcon name="name"/></th>
+                            <th scope="col" onClick={() => requestSort('email')} style={{cursor: 'pointer'}}>Email <SortIcon name="email"/></th>
+                            <th scope="col" onClick={() => requestSort('product')} style={{cursor: 'pointer'}}>Product <SortIcon name="product"/></th>
+                            <th scope="col" onClick={() => requestSort('subject')} style={{cursor: 'pointer'}}>Subject <SortIcon name="subject"/></th>
                             <th scope="col">Message (Preview)</th>
-                            <th scope="col">Status</th>
+                            <th scope="col" onClick={() => requestSort('status')} style={{cursor: 'pointer'}}>Status <SortIcon name="status"/></th>
                         </tr>
                     </thead>
                     <tbody>
-                        {inquiries && inquiries.map(inquiry => (
+                        {sortedInquiries && sortedInquiries.map(inquiry => (
                             <tr 
                                 key={inquiry._id} 
                                 onClick={() => navigate(`/admin/inquiry/${inquiry._id}`)}
