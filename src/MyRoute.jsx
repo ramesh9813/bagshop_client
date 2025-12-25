@@ -35,6 +35,8 @@ import Features from './pages/Features'
 import FAQs from './pages/FAQs'
 import ContactUs from './pages/ContactUs'
 import NotFound from './pages/NotFound'
+import VerifyEmailNotice from './pages/VerifyEmailNotice'
+import VerifyEmailAction from './pages/VerifyEmailAction'
 
 const MyRoute = () => {
   return (
@@ -49,6 +51,8 @@ const MyRoute = () => {
               <Route path='checkout' element={<Checkout/>}/>
               <Route path='login' element={<Login/>}/>
               <Route path='register' element={<Register/>}/>
+              <Route path='verify-email-notice' element={<VerifyEmailNotice/>}/>
+              <Route path='verify-email/:token' element={<VerifyEmailAction/>}/>
               <Route path='user' element={<UserProfile/>}/>
               <Route path='orders/me' element={<MyOrders/>}/>
               <Route path='order/:id' element={<OrderDetails/>}/>

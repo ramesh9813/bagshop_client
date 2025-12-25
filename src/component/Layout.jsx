@@ -13,9 +13,16 @@ const Layout = () => {
       <ShortcutOverlay />
       <ToastContainer 
         position="top-right" 
-        autoClose={1000} 
-        theme="colored"  
-        style={{ zIndex: 9999, top: '5.5rem', width: '224px' }} 
+        autoClose={3000} 
+        theme="colored"
+        hideProgressBar={false}
+        newestOnTop={true}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        style={{ zIndex: 9999, top: '80px' }} 
       />
       <Outlet />
       <Footer />

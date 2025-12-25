@@ -1,13 +1,20 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Formik, Form, Field,ErrorMessage } from 'formik'
 import * as Yup from 'yup'
 import axios from 'axios'
 import { useNavigate, Link } from 'react-router-dom'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Spinner from '../component/Spinner';
 
 const Register = () => {
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
+
+    if (loading) {
+        return <Spinner />;
+    }
+
   return (
     <>
     <ToastContainer theme='colored' position='top-center'/>
@@ -43,6 +50,7 @@ const Register = () => {
         .oneOf([Yup.ref('password')],'pasword must match with the one')
     })}
     onSubmit={async (values) => {
+        setLoading(true);
         try {
             const config = {
                 headers: { "Content-Type": "application/json" },
@@ -61,12 +69,10 @@ const Register = () => {
             );
 
             if (data.success) {
-                toast.success("Registration Successful! Please login.");
-                setTimeout(() => {
-                    navigate('/login');
-                }, 1500);
+                navigate('/verify-email-notice', { state: { email: values.email } });
             }
         } catch (error) {
+            setLoading(false);
             toast.error(error.response?.data?.message || "Registration Failed");
         }
     }}

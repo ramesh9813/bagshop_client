@@ -27,6 +27,8 @@ const Header = () => {
 
   useEffect(() => {
     const handleKeyDown = (e) => {
+      if (!e.key) return;
+
       // Ignore shortcuts if user is typing in an input or textarea
       if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) {
         return;
