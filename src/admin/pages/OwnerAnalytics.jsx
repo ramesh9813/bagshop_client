@@ -83,7 +83,6 @@ const OwnerAnalytics = () => {
 
     return (
         <div className="container-fluid">
-            <h3 className="mb-4 fw-bold">Deep Sales Analysis</h3>
             
             <div className="row g-4">
                 {/* Revenue Trend */}

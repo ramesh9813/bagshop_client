@@ -38,10 +38,6 @@ const ActivityLogs = () => {
 
     return (
         <div className="container-fluid">
-            <div className="d-flex justify-content-between align-items-center mb-4">
-                <h3 className="fw-bold m-0">Admin Activity Monitor</h3>
-                <span className="text-muted small">Tracking the last 100 sensitive actions</span>
-            </div>
 
             {loading ? <Spinner /> : (
                 <div className="card shadow-sm border-0">
