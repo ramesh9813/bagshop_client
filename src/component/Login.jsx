@@ -79,11 +79,16 @@ const Login = () => {
             </span>
             </div>
 
-            <div className="form-check text-start my-3">
-            <input className="form-check-input" type="checkbox" value="remember-me" id="flexCheckDefault" />
-            <label className="form-check-label" htmlFor="flexCheckDefault">
-                Remember me
-            </label>
+            <div className="d-flex justify-content-between align-items-center my-3">
+              <div className="form-check text-start">
+                <input className="form-check-input" type="checkbox" value="remember-me" id="flexCheckDefault" />
+                <label className="form-check-label" htmlFor="flexCheckDefault">
+                    Remember me
+                </label>
+              </div>
+              <Link to="/password/forgot" className="text-decoration-none small text-warning fw-bold">
+                  Forgot Password?
+              </Link>
             </div>
             
             <button className="btn btn-warning w-100 py-2 fw-bold text-dark" type="submit">Sign in</button>

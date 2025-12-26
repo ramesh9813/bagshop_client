@@ -3,10 +3,11 @@ import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { useSelector, useDispatch } from 'react-redux'
+import useCart from '../hooks/useCart'
 
 const Header = () => {
   const { user } = useSelector(state => state.auth)
-  const { cartCount } = useSelector(state => state.cart)
+  const { cartCount } = useCart(); // Use hook to init cart and get count
   const dispatch = useDispatch()
   const [showDropdown, setShowDropdown] = useState(false)
   const navigate = useNavigate()

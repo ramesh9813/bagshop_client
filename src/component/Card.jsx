@@ -1,13 +1,12 @@
 import React from 'react'
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useDispatch } from 'react-redux';
+import useCart from '../hooks/useCart';
 
 const Card = (props) => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { addToCart } = useCart();
+
   // console.log(props.data)
   if (!props.data) {
     return null; // or handle the absence of data as per your requirement
@@ -18,76 +17,12 @@ const handlePriceClick = (e) => {
   navigate(`/products?maxPrice=${props.data.price}`);
 };
 
-const addToCart = async (e) => {
-  e.preventDefault(); // Prevent default link behavior if inside a Link
-  e.stopPropagation(); // Stop event bubbling
-
-  try {
-      const product = props.data;
-      if (!product || !product._id) {
-        console.error("Product data missing ID");
-        return;
-      }
-
-      const optimisticItem = {
-          product: product,
-          quantity: 1
-      };
-
-      let localCart = [];
-      try {
-        localCart = JSON.parse(localStorage.getItem('cart')) || [];
-        if (!Array.isArray(localCart)) localCart = [];
-      } catch (err) {
-        localCart = [];
-      }
-
-      const existingItemIndex = localCart.findIndex(item => item.product._id === product._id);
-
-      if (existingItemIndex !== -1) {
-          // Item exists: Check stock before incrementing
-          const newQuantity = localCart[existingItemIndex].quantity + 1;
-          
-          if (newQuantity > product.stock) {
-              toast.warning(`No more items remaining in stock. Max available: ${product.stock}`);
-              return;
-          }
-
-          localCart[existingItemIndex].quantity = newQuantity;
-          localStorage.setItem('cart', JSON.stringify(localCart));
-          toast.success("Item quantity updated");
-          // Dispatch removed here because we only track unique items count
-
-          await axios.put(
-              `${import.meta.env.VITE_API_BASE_URL}/cart/update`,
-              { productId: product._id, quantity: newQuantity },
-              { withCredentials: true }
-          );
-
-      } else {
-          // Item is new: Check if at least 1 is in stock
-          if (product.stock < 1) {
-              toast.error("Sorry, this item is out of stock.");
-              return;
-          }
-
-          localCart.push(optimisticItem);
-          localStorage.setItem('cart', JSON.stringify(localCart));
-          toast.success("Item added to cart");
-          dispatch({ type: 'ADD_TO_CART' });
-
-          await axios.post(
-              `${import.meta.env.VITE_API_BASE_URL}/cart/add`,
-              { productId: product._id, quantity: 1 },
-              { withCredentials: true }
-          );
-      }
-
-  } catch (error) {
-      console.error("Background sync failed:", error);
-      if (error.response?.data?.message) {
-           toast.error(error.response.data.message);
-      }
+const handleAddToCart = (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  
+  if (props.data) {
+    addToCart(props.data, 1);
   }
 }
 
@@ -148,7 +83,7 @@ const strippedTitle = (title, carlength) => {
                   <div className="d-grid">
                     <button 
                       className='btn btn-warning fw-bold' 
-                      onClick={addToCart}
+                      onClick={handleAddToCart}
                       disabled={props.data.stock <= 0}
                     >
                       <i className="bi bi-cart-plus me-2"></i> 

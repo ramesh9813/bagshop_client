@@ -69,6 +69,25 @@ const OrderDetails = () => {
         }
     };
 
+    const cancelOrder = async () => {
+        if (window.confirm("Are you sure you want to cancel this order?")) {
+            try {
+                const { data } = await axios.put(
+                    `${import.meta.env.VITE_API_BASE_URL}/order/cancel/${order._id}`,
+                    {},
+                    { withCredentials: true }
+                );
+
+                if (data.success) {
+                    toast.success("Order Cancelled Successfully");
+                    setOrder({ ...order, orderStatus: 'Cancelled' });
+                }
+            } catch (error) {
+                toast.error(error.response?.data?.message || "Failed to cancel order");
+            }
+        }
+    };
+
     return (
         <div className="container mt-5 mb-5">
             <h2 className="mb-4">Order Details: {order._id}</h2>
@@ -103,7 +122,8 @@ const OrderDetails = () => {
                             {/* Retry Payment Button */}
                             {order.paymentInfo && 
                              order.paymentInfo.status.toLowerCase() !== "succeeded" && 
-                             order.paymentInfo.method === "eSewa" && (
+                             order.paymentInfo.method === "eSewa" && 
+                             order.orderStatus !== 'Cancelled' && (
                                 <button 
                                     className="btn btn-success mt-3"
                                     onClick={handlePaymentRetry}
@@ -123,13 +143,22 @@ const OrderDetails = () => {
                                 <span 
                                     className={`fw-bold ${
                                         order.orderStatus === 'Delivered' ? 'text-success' : 
-                                        order.orderStatus === 'Processing' ? 'text-warning' : ''
+                                        order.orderStatus === 'Processing' ? 'text-warning' : 
+                                        order.orderStatus === 'Cancelled' ? 'text-danger' : ''
                                     }`}
                                     style={order.orderStatus === 'Shipped' ? { color: '#ff69b4' } : {}}
                                 >
                                     {order.orderStatus}
                                 </span>
                             </p>
+                            {order.orderStatus === 'Processing' && (
+                                <button 
+                                    className="btn btn-outline-danger btn-sm mt-2"
+                                    onClick={cancelOrder}
+                                >
+                                    Cancel Order
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>

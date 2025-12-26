@@ -6,6 +6,7 @@ import Accordion from 'react-bootstrap/Accordion';
 import Spinner from '../component/Spinner';
 import Card from '../component/Card';
 import { useSelector } from 'react-redux';
+import useCart from '../hooks/useCart';
 
 const ProductDetial = () => {
   const [product,setProduct]=useState({})
@@ -14,6 +15,7 @@ const ProductDetial = () => {
   const [rating, setRating] = useState(5)
   const [comment, setComment] = useState("")
   const { user } = useSelector(state => state.auth)
+  const { addToCart } = useCart();
   const params =useParams()
   const id= params.productId
 
@@ -50,61 +52,9 @@ const ProductDetial = () => {
      fetchProduct();
   },[id])
 
-  const addToCart = async () => {
-    // Optimistic UI Update
-    try {
-        const optimisticItem = {
-            product: product,
-            quantity: 1
-        };
-
-        const localCart = JSON.parse(localStorage.getItem('cart')) || [];
-        const existingItemIndex = localCart.findIndex(item => item.product._id === product._id);
-
-        if (existingItemIndex !== -1) {
-             // Item exists: Increment quantity and use PUT /cart/update
-             const newQuantity = localCart[existingItemIndex].quantity + 1;
-             localCart[existingItemIndex].quantity = newQuantity;
-             localStorage.setItem('cart', JSON.stringify(localCart));
-             toast.success("Item quantity updated");
-
-             const config = {
-                headers: { 'Content-Type': 'application/json' },
-                withCredentials: true
-            };
-
-             await axios.put(
-                `${import.meta.env.VITE_API_BASE_URL}/cart/update`,
-                { productId: product._id, quantity: newQuantity },
-                config
-            );
-        } else {
-             // Item is new: Add to cart and use POST /cart/add
-            localCart.push(optimisticItem);
-            localStorage.setItem('cart', JSON.stringify(localCart));
-            toast.success("Item added to cart");
-
-            // Background Server Sync
-            const config = {
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                withCredentials: true
-            }
-
-            await axios.post(
-                `${import.meta.env.VITE_API_BASE_URL}/cart/add`,
-                { productId: product._id, quantity: 1 },
-                config
-            );
-        }
-
-    } catch (error) {
-        // Silent fail for optimistic part, but alert on server error if needed
-        console.error("Background sync failed:", error);
-        if (error.response?.data?.message) {
-             toast.error(error.response.data.message);
-        }
+  const handleAddToCart = () => {
+    if (product && product.stock > 0) {
+      addToCart(product, 1);
     }
   }
 
@@ -207,7 +157,7 @@ const ProductDetial = () => {
             <div className="my-3">
               <button 
                 className='btn btn-warning btn-lg w-100' 
-                onClick={addToCart}
+                onClick={handleAddToCart}
                 disabled={product.stock <= 0}
               >
                 <i className="bi bi-cart-plus me-2"></i> {product.stock > 0 ? "ADD TO CART" : "OUT OF STOCK"}

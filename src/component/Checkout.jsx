@@ -28,6 +28,7 @@ const Checkout = () => {
     const [showMap, setShowMap] = useState(false);
     const [position, setPosition] = useState(null);
     const [paymentMethod, setPaymentMethod] = useState('eSewa');
+    const [processing, setProcessing] = useState(false);
     const hasFetchedDefault = useRef(false);
 
     useEffect(() => {
@@ -87,6 +88,8 @@ const Checkout = () => {
         }
 
         if (phoneError) return;
+
+        setProcessing(true);
 
         try {
             const config = {
@@ -158,6 +161,7 @@ const Checkout = () => {
             }
 
         } catch (error) {
+            setProcessing(false);
             toast.error(error.response?.data?.message || "Failed to place order");
         }
     };
@@ -270,23 +274,35 @@ const Checkout = () => {
                                 <div className="d-flex gap-2">
                                     <button 
                                         type="button" 
-                                        className="btn btn-warning w-50 btn-lg"
+                                        className="btn btn-warning w-50 btn-lg d-flex align-items-center justify-content-center"
                                         onClick={(e) => {
                                             setPaymentMethod('eSewa');
                                             submitHandler(e, 'eSewa');
                                         }}
+                                        disabled={processing}
                                     >
-                                        <i className="bi bi-wallet2 me-2"></i> Proceed with eSewa
+                                        {processing && paymentMethod === 'eSewa' ? (
+                                            <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                                        ) : (
+                                            <i className="bi bi-wallet2 me-2"></i>
+                                        )}
+                                        {processing && paymentMethod === 'eSewa' ? 'Processing...' : 'Pay with eSewa'}
                                     </button>
                                     <button 
                                         type="button" 
-                                        className="btn btn-secondary w-50 btn-lg"
+                                        className="btn btn-secondary w-50 btn-lg d-flex align-items-center justify-content-center"
                                         onClick={(e) => {
                                             setPaymentMethod('COD');
                                             submitHandler(e, 'COD');
                                         }}
+                                        disabled={processing}
                                     >
-                                        <i className="bi bi-cash-stack me-2"></i> Cash on Delivery
+                                        {processing && paymentMethod === 'COD' ? (
+                                            <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                                        ) : (
+                                            <i className="bi bi-cash-stack me-2"></i>
+                                        )}
+                                        {processing && paymentMethod === 'COD' ? 'Processing...' : 'Cash on Delivery'}
                                     </button>
                                 </div>
                             </form>

@@ -67,7 +67,8 @@ const MyOrders = () => {
                                                 <span 
                                                     className={`badge ${
                                                         order.orderStatus === 'Processing' ? 'bg-warning text-dark' : 
-                                                        order.orderStatus === 'Delivered' ? 'bg-success' : ''
+                                                        order.orderStatus === 'Delivered' ? 'bg-success' : 
+                                                        order.orderStatus === 'Cancelled' ? 'bg-danger' : 'bg-secondary'
                                                     }`}
                                                     style={order.orderStatus === 'Shipped' ? { backgroundColor: '#ff69b4', color: 'white' } : {}}
                                                 >
