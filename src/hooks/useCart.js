@@ -8,6 +8,27 @@ const useCart = () => {
     const { cartItems, cartCount } = useSelector(state => state.cart);
     const { user } = useSelector(state => state.auth);
 
+    const formatProductName = (name, maxChars = 60) => {
+        if (!name) return "Item";
+        const normalized = String(name).trim().replace(/\s+/g, " ");
+        if (normalized.length <= maxChars) return normalized;
+        const suffix = "...";
+        const limit = Math.max(1, maxChars - suffix.length);
+        const words = normalized.split(" ");
+        let result = "";
+        for (const word of words) {
+            const next = result ? `${result} ${word}` : word;
+            if (next.length > limit) {
+                if (!result) {
+                    return `${word.slice(0, limit)}${suffix}`;
+                }
+                break;
+            }
+            result = next;
+        }
+        return `${result}${suffix}`;
+    };
+
     // 1. Initialization Logic
     useEffect(() => {
         const initCart = async () => {
@@ -61,7 +82,8 @@ const useCart = () => {
         
         // Optimistic Redux Update
         dispatch({ type: 'ADD_TO_CART', payload: item });
-        toast.success("Item added to cart");
+        const displayName = formatProductName(product?.name);
+        toast.success(`${displayName} added to cart`);
 
         if (user) {
             // Server Sync
@@ -90,6 +112,14 @@ const useCart = () => {
         }
     };
 
+    const getItemName = (productId) => {
+        const item = cartItems.find(entry => {
+            const entryId = entry?.product?._id || entry?.product;
+            return String(entryId) === String(productId);
+        });
+        return formatProductName(item?.product?.name || item?.name);
+    };
+
     const updateQuantity = async (productId, newQuantity) => {
         if (newQuantity < 1) return;
 
@@ -115,8 +145,9 @@ const useCart = () => {
     };
 
     const removeItem = async (productId) => {
+        const itemName = getItemName(productId);
         dispatch({ type: 'REMOVE_FROM_CART', payload: productId });
-        toast.error("Item removed");
+        toast.error(`${itemName} was removed`);
 
         if (user) {
             try {

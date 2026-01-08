@@ -119,22 +119,20 @@ const Checkout = () => {
             );
 
             if (orderResponse.success) {
-                // 1.5 Auto-save shipping info to user profile for next time
-                try {
-                    await axios.put(
-                        `${import.meta.env.VITE_API_BASE_URL}/me/update`,
-                        {
-                            shippingInfo: {
-                                address,
-                                city,
-                                phoneNo
-                            }
-                        },
-                        config
-                    );
-                } catch (updateError) {
+                // 1.5 Auto-save shipping info to user profile for next time (non-blocking)
+                axios.put(
+                    `${import.meta.env.VITE_API_BASE_URL}/me/update`,
+                    {
+                        shippingInfo: {
+                            address,
+                            city,
+                            phoneNo
+                        }
+                    },
+                    config
+                ).catch((updateError) => {
                     console.error("Failed to auto-save shipping info", updateError);
-                }
+                });
 
                 // Handle Logic based on Payment Method
                 if (methodToUse === 'COD') {
