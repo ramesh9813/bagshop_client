@@ -1,9 +1,8 @@
-let userdetial=[
-    {user1:{
-        email:"rameshsingh9813@gmail.com",
-        fullName:"Ramesh kumar mahato",
-        password:"12345678",
-        searchItem:["dress"]
-        
-    }}
+let userdetial = [
+    { user1: {
+        email: import.meta.env.VITE_DEMO_EMAIL || "",
+        fullName: import.meta.env.VITE_DEMO_FULL_NAME || "",
+        password: import.meta.env.VITE_DEMO_PASSWORD || "",
+        searchItem: ["dress"]
+    } }
 ]
