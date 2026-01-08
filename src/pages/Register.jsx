@@ -12,6 +12,7 @@ const Register = () => {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const requestTimeoutMs = Number(import.meta.env.VITE_API_TIMEOUT_MS) || 8000;
 
     if (loading) {
         return <Spinner />;
@@ -60,6 +61,7 @@ const Register = () => {
         try {
             const config = {
                 headers: { "Content-Type": "application/json" },
+                timeout: requestTimeoutMs,
             };
             
             const userData = {
@@ -75,11 +77,18 @@ const Register = () => {
             );
 
             if (data.success) {
+                setLoading(false);
                 navigate('/verify-email-notice', { state: { email: values.email } });
+                return;
             }
+            setLoading(false);
+            toast.error(data?.message || "Registration Failed");
         } catch (error) {
             setLoading(false);
-            toast.error(error.response?.data?.message || "Registration Failed");
+            const message = error.code === 'ECONNABORTED'
+                ? "Registration timed out. Please try again."
+                : (error.response?.data?.message || "Registration Failed");
+            toast.error(message);
         }
     }}
     >

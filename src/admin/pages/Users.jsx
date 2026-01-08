@@ -9,18 +9,22 @@ const Users = () => {
     const [loading, setLoading] = useState(true)
     const { user: currentUser } = useSelector(state => state.auth)
     const { items: sortedUsers, requestSort, sortConfig } = useSortableData(users);
+    const requestTimeoutMs = Number(import.meta.env.VITE_API_TIMEOUT_MS) || 8000;
 
     const fetchUsers = async () => {
         try {
             const { data } = await axios.get(
                 `${import.meta.env.VITE_API_BASE_URL}/admin/users`,
-                { withCredentials: true }
+                { withCredentials: true, timeout: requestTimeoutMs }
             )
             if (data.success) {
                 setUsers(data.users)
             }
         } catch (error) {
-            toast.error("Failed to fetch users")
+            const message = error.code === 'ECONNABORTED'
+                ? "Request timed out. Please try again."
+                : "Failed to fetch users";
+            toast.error(message)
         } finally {
             setLoading(false)
         }
@@ -43,7 +47,7 @@ const Users = () => {
                 const { data } = await axios.put(
                     `${import.meta.env.VITE_API_BASE_URL}/admin/user/${userId}`,
                     { role: newRole },
-                    { withCredentials: true }
+                    { withCredentials: true, timeout: requestTimeoutMs }
                 )
                 
                 if (data.success) {
