@@ -3,8 +3,7 @@ import { Formik, Form, Field,ErrorMessage } from 'formik'
 import * as Yup from 'yup'
 import axios from 'axios'
 import { useNavigate, Link } from 'react-router-dom'
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 import Spinner from '../component/Spinner';
 
 const Register = () => {
@@ -20,7 +19,6 @@ const Register = () => {
 
   return (
     <>
-    <ToastContainer theme='colored' position='top-center'/>
     <Formik 
     initialValues={{
         fname:'',

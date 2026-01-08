@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import 'react-toastify/dist/ReactToastify.css';
 
 const UserProfile = () => {
     const navigate = useNavigate();
@@ -119,7 +118,6 @@ const UserProfile = () => {
 
     return (
         <div className="container mt-5">
-            <ToastContainer theme='colored' position='top-center'/>
             <div className="row justify-content-center">
                 <div className="col-md-4 text-center">
                     <div className="card p-3 mb-4">

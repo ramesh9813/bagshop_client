@@ -13,7 +13,7 @@ const Layout = () => {
       <ShortcutOverlay />
       <ToastContainer 
         position="top-left" 
-        autoClose={3000} 
+        autoClose={1000} 
         theme="colored"
         hideProgressBar={false}
         newestOnTop={true}
