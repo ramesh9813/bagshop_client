@@ -96,6 +96,7 @@ const OrderList = () => {
                     <thead className="table-light">
                         <tr>
                             <th scope="col" onClick={() => requestSort('_id')} style={{cursor: 'pointer'}}>Order ID <SortIcon name="_id"/></th>
+                            <th scope="col" onClick={() => requestSort('createdAt')} style={{cursor: 'pointer'}}>Placed On <SortIcon name="createdAt"/></th>
                             <th scope="col" onClick={() => requestSort('orderItems.length')} style={{cursor: 'pointer'}}>Items Qty <SortIcon name="orderItems.length"/></th>
                             <th scope="col" onClick={() => requestSort('totalPrice')} style={{cursor: 'pointer'}}>Amount <SortIcon name="totalPrice"/></th>
                             <th scope="col" onClick={() => requestSort('orderStatus')} style={{cursor: 'pointer'}}>Status <SortIcon name="orderStatus"/></th>
@@ -106,6 +107,7 @@ const OrderList = () => {
                         {sortedOrders && sortedOrders.map(order => (
                             <tr key={order._id}>
                                 <td>{order._id}</td>
+                                <td>{new Date(order.createdAt).toLocaleDateString()}</td>
                                 <td>{order.orderItems.length}</td>
                                 <td>NRS {order.totalPrice.toLocaleString()}</td>
                                 <td>

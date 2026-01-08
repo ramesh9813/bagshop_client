@@ -40,6 +40,7 @@ import VerifyEmailAction from './pages/VerifyEmailAction'
 import ShippingPolicy from './pages/ShippingPolicy'
 import PrivacyPolicy from './pages/PrivacyPolicy'
 import ForgotPassword from './pages/ForgotPassword'
+import ForgotPasswordNotice from './pages/ForgotPasswordNotice'
 import ResetPassword from './pages/ResetPassword'
 
 const MyRoute = () => {
@@ -55,6 +56,7 @@ const MyRoute = () => {
               <Route path='checkout' element={<Checkout/>}/>
               <Route path='login' element={<Login/>}/>
               <Route path='password/forgot' element={<ForgotPassword/>}/>
+              <Route path='password/forgot/notice' element={<ForgotPasswordNotice/>}/>
               <Route path='password/reset/:token' element={<ResetPassword/>}/>
               <Route path='register' element={<Register/>}/>
               <Route path='verify-email-notice' element={<VerifyEmailNotice/>}/>

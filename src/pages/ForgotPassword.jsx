@@ -1,10 +1,12 @@
 import React, { useState } from 'react'
 import axios from 'axios'
 import { toast } from 'react-toastify'
+import { useNavigate } from 'react-router-dom'
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState('')
     const [loading, setLoading] = useState(false)
+    const navigate = useNavigate()
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -20,7 +22,7 @@ const ForgotPassword = () => {
             )
 
             if (data.success) {
-                toast.success(data.message)
+                navigate('/password/forgot/notice', { state: { email } })
             }
         } catch (error) {
             toast.error(error.response?.data?.message || "Failed to send reset email")

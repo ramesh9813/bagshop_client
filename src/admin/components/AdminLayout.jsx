@@ -6,7 +6,7 @@ import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
 const AdminLayout = () => {
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true)
 
   const toggleSidebar = () => {
     setIsSidebarCollapsed(!isSidebarCollapsed)
