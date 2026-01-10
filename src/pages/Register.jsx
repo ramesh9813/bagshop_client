@@ -11,7 +11,7 @@ const Register = () => {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const requestTimeoutMs = Number(import.meta.env.VITE_API_TIMEOUT_MS) || 8000;
+    const requestTimeoutMs = Number(import.meta.env.VITE_API_TIMEOUT_MS) || 25000;
 
     if (loading) {
         return <Spinner />;
@@ -84,7 +84,7 @@ const Register = () => {
         } catch (error) {
             setLoading(false);
             const message = error.code === 'ECONNABORTED'
-                ? "Registration timed out. Please try again."
+                ? "Server is waking up. Please try again in a few seconds."
                 : (error.response?.data?.message || "Registration Failed");
             toast.error(message);
         }
